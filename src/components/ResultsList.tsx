@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   ClockIcon, 
   CheckCircleIcon, 
@@ -100,13 +100,17 @@ const getInputTypeInfo = (inputType: InputType) => {
   }
 };
 
+interface ResultsListProps {
+  taskHistory?: Task[];
+}
+
 /**
  * 生成结果列表组件
  * 显示用户的历史任务和闪卡生成记录
  */
-export default function ResultsList() {
-  // 模拟任务数据
-  const [tasks] = useState<Task[]>([
+export default function ResultsList({ taskHistory }: ResultsListProps = {}) {
+  // 如果传入了任务历史，则使用传入的历史数据，否则使用模拟数据
+  const [tasks, setTasks] = useState<Task[]>(taskHistory || [
     {
       id: '1',
       title: '高中数学函数知识点',
@@ -150,6 +154,13 @@ export default function ResultsList() {
       errorMessage: '内容格式不支持，请检查输入内容'
     }
   ]);
+
+  // 当传入的任务历史发生变化时，更新本地状态
+  useEffect(() => {
+    if (taskHistory) {
+      setTasks(taskHistory);
+    }
+  }, [taskHistory]);
 
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 

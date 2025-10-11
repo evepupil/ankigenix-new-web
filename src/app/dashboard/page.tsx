@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ChevronDownIcon, CreditCardIcon, ClockIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import ResultsList from '@/components/ResultsList';
+import { apiService } from '@/services/api';
+import { Flashcard } from '@/types/flashcard';
 
 /**
  * Dashboard页面组件
@@ -31,6 +33,7 @@ export default function Dashboard() {
   const [textInput, setTextInput] = useState('');
   const [urlInput, setUrlInput] = useState('');
   const [topicInput, setTopicInput] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   // AI配置状态
   const [aiConfig, setAiConfig] = useState({
@@ -40,12 +43,121 @@ export default function Dashboard() {
     includeImages: false
   });
 
+  // 处理状态
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [processMessage, setProcessMessage] = useState('');
+
+  // 生成的闪卡列表
+  const [generatedCards, setGeneratedCards] = useState<Flashcard[]>([]);
+  
+  // 任务历史记录
+  const [taskHistory, setTaskHistory] = useState<any[]>([]);
+
+  // 从 localStorage 加载任务历史
+  useEffect(() => {
+    const savedHistory = localStorage.getItem('ankiTaskHistory');
+    if (savedHistory) {
+      try {
+        setTaskHistory(JSON.parse(savedHistory));
+      } catch (e) {
+        console.error('加载任务历史失败:', e);
+      }
+    }
+  }, []);
+
+  // 保存任务历史到 localStorage
+  useEffect(() => {
+    localStorage.setItem('ankiTaskHistory', JSON.stringify(taskHistory));
+  }, [taskHistory]);
+
+  // 文件输入引用
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   /**
    * 处理生成闪卡的操作
    */
-  const handleGenerateCards = () => {
-    console.log('生成闪卡', { activeTab, textInput, urlInput, topicInput, aiConfig });
-    // 这里将来会调用API
+  const handleGenerateCards = async () => {
+    if (isProcessing) return; // 防止重复提交
+    
+    setIsProcessing(true);
+    setProcessMessage('正在生成闪卡...');
+
+    try {
+      let result;
+      
+      if (activeTab === 'text' && textInput.trim()) {
+        // 文本生成
+        result = await apiService.generateFlashcardsFromText(textInput);
+      } else if (activeTab === 'file' && selectedFile) {
+        // 文件生成
+        result = await apiService.generateFlashcardsFromFile(selectedFile);
+      } else {
+        setProcessMessage('请提供有效的输入内容');
+        return;
+      }
+
+      if (result.success && result.cards) {
+        setGeneratedCards(result.cards);
+        
+        // 添加到任务历史
+        const newTask = {
+          id: Date.now().toString(),
+          title: activeTab === 'text' 
+            ? `文本生成 - ${textInput.substring(0, 30)}${textInput.length > 30 ? '...' : ''}` 
+            : `文件生成 - ${selectedFile?.name || '未知文件'}`,
+          inputType: activeTab,
+          status: 'completed' as const,
+          createdAt: new Date().toLocaleString('zh-CN'),
+          completedAt: new Date().toLocaleString('zh-CN'),
+          cardCount: result.cards.length,
+          qualityScore: 90, // 模拟质量评分
+        };
+        
+        setTaskHistory(prev => [newTask, ...prev]);
+        setProcessMessage(`成功生成 ${result.cards.length} 张闪卡`);
+      } else {
+        setProcessMessage(result.error || '生成闪卡失败');
+      }
+    } catch (error) {
+      console.error('生成闪卡时出错:', error);
+      setProcessMessage('生成闪卡时发生错误');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  /**
+   * 处理文件选择
+   */
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      // 文件类型验证
+      const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain', 'text/markdown'];
+      if (!validTypes.includes(file.type) && !file.name.match(/\.(pdf|doc|docx|txt|md)$/i)) {
+        setProcessMessage('不支持的文件类型。请上传 PDF, DOC, DOCX, TXT, 或 MD 文件。');
+        return;
+      }
+      
+      // 文件大小限制 (10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        setProcessMessage('文件大小不能超过 10MB');
+        return;
+      }
+      
+      setSelectedFile(file);
+      setProcessMessage(`已选择文件: ${file.name}`);
+    }
+  };
+
+  /**
+   * 触发文件选择
+   */
+  const triggerFileSelect = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
   };
 
   /**
@@ -73,7 +185,10 @@ export default function Dashboard() {
             <label className="block text-sm font-medium text-gray-700">
               上传文件
             </label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors">
+            <div 
+              className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors cursor-pointer"
+              onClick={triggerFileSelect}
+            >
               <div className="space-y-2">
                 <div className="text-gray-500">
                   <svg className="mx-auto h-12 w-12" stroke="currentColor" fill="none" viewBox="0 0 48 48">
@@ -81,16 +196,29 @@ export default function Dashboard() {
                   </svg>
                 </div>
                 <div className="text-sm text-gray-600">
-                  <span className="font-medium text-blue-600 hover:text-blue-500 cursor-pointer">
+                  <span className="font-medium text-blue-600 hover:text-blue-500">
                     点击上传文件
                   </span>
                   <span> 或拖拽文件到此处</span>
                 </div>
                 <p className="text-xs text-gray-500">
-                  支持 PDF, DOC, TXT, MD 等格式，最大 10MB
+                  支持 PDF, DOC, DOCX, TXT, MD 等格式，最大 10MB
                 </p>
+                {selectedFile && (
+                  <div className="mt-4 p-3 bg-blue-50 rounded-md text-sm text-gray-700">
+                    已选择: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                  </div>
+                )}
               </div>
             </div>
+            {/* 隐藏的文件输入框 */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              className="hidden"
+              accept=".pdf,.doc,.docx,.txt,.md,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,text/markdown"
+            />
           </div>
         );
       case 'url':
@@ -243,16 +371,38 @@ export default function Dashboard() {
                 </div>
 
                 {/* 生成按钮 */}
-                <div className="flex justify-center">
+                <div className="flex flex-col items-center">
                   <button
                     onClick={handleGenerateCards}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 flex items-center space-x-2"
+                    disabled={isProcessing}
+                    className={`bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 flex items-center space-x-2 ${
+                      isProcessing ? 'opacity-70 cursor-not-allowed' : ''
+                    }`}
                   >
-                    <span>生成闪卡</span>
-                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
+                    {isProcessing ? (
+                      <>
+                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>生成中...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>生成闪卡</span>
+                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                      </>
+                    )}
                   </button>
+                  
+                  {/* 状态消息 */}
+                  {processMessage && (
+                    <div className={`mt-3 text-center text-sm ${processMessage.includes('失败') || processMessage.includes('错误') ? 'text-red-600' : 'text-blue-600'}`}>
+                      {processMessage}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -337,7 +487,7 @@ export default function Dashboard() {
 
         {/* 生成结果列表 */}
         <div className="mt-8">
-          <ResultsList />
+          <ResultsList taskHistory={taskHistory} />
         </div>
       </div>
     </div>
