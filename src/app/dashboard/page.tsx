@@ -1,16 +1,19 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { ChevronDownIcon, CreditCardIcon, ClockIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import ResultsList from '@/components/ResultsList';
 import { apiService } from '@/services/api';
-import { Flashcard } from '@/types/flashcard';
+import { Flashcard, FlashcardSet } from '@/types/flashcard';
 
 /**
  * Dashboard页面组件
  * 提供用户的主要工作界面，包含积分信息、任务状态和核心操作区域
  */
 export default function Dashboard() {
+  const router = useRouter();
+
   // 模拟用户数据
   const [userCredits] = useState({
     remaining: 150,
@@ -35,13 +38,6 @@ export default function Dashboard() {
   const [topicInput, setTopicInput] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  // AI配置状态
-  const [aiConfig, setAiConfig] = useState({
-    difficulty: 'medium',
-    cardCount: 10,
-    language: 'zh',
-    includeImages: false
-  });
 
   // 处理状态
   const [isProcessing, setIsProcessing] = useState(false);
@@ -78,43 +74,88 @@ export default function Dashboard() {
    */
   const handleGenerateCards = async () => {
     if (isProcessing) return; // 防止重复提交
-    
+
     setIsProcessing(true);
     setProcessMessage('正在生成闪卡...');
 
     try {
       let result;
-      
+      let inputTitle = '';
+
       if (activeTab === 'text' && textInput.trim()) {
         // 文本生成
         result = await apiService.generateFlashcardsFromText(textInput);
+        inputTitle = `文本生成 - ${textInput.substring(0, 30)}${textInput.length > 30 ? '...' : ''}`;
       } else if (activeTab === 'file' && selectedFile) {
         // 文件生成
         result = await apiService.generateFlashcardsFromFile(selectedFile);
+        inputTitle = `文件生成 - ${selectedFile.name}`;
+      } else if (activeTab === 'url' && urlInput.trim()) {
+        // 网页生成
+        result = await apiService.generateFlashcardsFromUrl(urlInput, 10, 'zh');
+        inputTitle = `网页生成 - ${urlInput}`;
       } else {
         setProcessMessage('请提供有效的输入内容');
+        setIsProcessing(false);
         return;
       }
 
       if (result.success && result.cards) {
-        setGeneratedCards(result.cards);
-        
+        // 为每张卡片添加唯一ID
+        const cardsWithIds = result.cards.map((card: Flashcard, index: number) => ({
+          ...card,
+          id: `card-${Date.now()}-${index}`,
+          qualityScore: 85 + Math.floor(Math.random() * 15), // 模拟质量评分 85-100
+        }));
+
+        setGeneratedCards(cardsWithIds);
+
+        // 创建闪卡集数据结构
+        const flashcardSet: FlashcardSet = {
+          id: `set-${Date.now()}`,
+          title: inputTitle,
+          topic: activeTab === 'text'
+            ? textInput.substring(0, 50)
+            : activeTab === 'url'
+            ? urlInput
+            : selectedFile?.name || '未知主题',
+          createdAt: new Date().toLocaleString('zh-CN'),
+          totalCards: cardsWithIds.length,
+          averageQuality: Math.floor(cardsWithIds.reduce((sum: number, card: any) => sum + (card.qualityScore || 0), 0) / cardsWithIds.length),
+          chapters: [
+            {
+              id: 'ch-default',
+              title: '默认章节',
+              description: '自动生成的闪卡',
+              isExpanded: true,
+              cards: cardsWithIds,
+            },
+          ],
+        };
+
+        // 保存到 localStorage
+        localStorage.setItem('currentFlashcardSet', JSON.stringify(flashcardSet));
+
         // 添加到任务历史
         const newTask = {
           id: Date.now().toString(),
-          title: activeTab === 'text' 
-            ? `文本生成 - ${textInput.substring(0, 30)}${textInput.length > 30 ? '...' : ''}` 
-            : `文件生成 - ${selectedFile?.name || '未知文件'}`,
+          title: inputTitle,
           inputType: activeTab,
           status: 'completed' as const,
           createdAt: new Date().toLocaleString('zh-CN'),
           completedAt: new Date().toLocaleString('zh-CN'),
-          cardCount: result.cards.length,
-          qualityScore: 90, // 模拟质量评分
+          cardCount: cardsWithIds.length,
+          qualityScore: flashcardSet.averageQuality,
+          flashcardSetId: flashcardSet.id, // 保存闪卡集ID用于后续访问
         };
-        
+
         setTaskHistory(prev => [newTask, ...prev]);
-        setProcessMessage(`成功生成 ${result.cards.length} 张闪卡`);
+        setProcessMessage(`成功生成 ${cardsWithIds.length} 张闪卡`);
+
+        // 延迟后跳转到预览页面
+        setTimeout(() => {
+          router.push('/preview');
+        }, 1000);
       } else {
         setProcessMessage(result.error || '生成闪卡失败');
       }
@@ -225,17 +266,17 @@ export default function Dashboard() {
         return (
           <div className="space-y-4">
             <label className="block text-sm font-medium text-gray-700">
-              输入网页链接或视频地址
+              输入网页链接
             </label>
             <input
               type="url"
               value={urlInput}
               onChange={(e) => setUrlInput(e.target.value)}
-              placeholder="https://example.com 或 YouTube/Bilibili 视频链接"
+              placeholder="https://example.com"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             <p className="text-sm text-gray-500">
-              支持网页文章、YouTube视频、Bilibili视频等内容源
+              支持网页文章、博客等内容源，AI将自动爬取网页内容并生成闪卡
             </p>
           </div>
         );
@@ -312,175 +353,95 @@ export default function Dashboard() {
 
       {/* 主要内容区域 */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* 核心操作区域 */}
-          <div className="lg:col-span-3">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-              <div className="p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">创建新的闪卡集</h2>
-                
-                {/* Tab切换 */}
-                <div className="border-b border-gray-200 mb-6">
-                  <nav className="-mb-px flex space-x-8">
-                    <button
-                      onClick={() => setActiveTab('text')}
-                      className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                        activeTab === 'text'
-                          ? 'border-blue-500 text-blue-600'
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                      }`}
-                    >
-                      文本输入
-                    </button>
-                    <button
-                      onClick={() => setActiveTab('file')}
-                      className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                        activeTab === 'file'
-                          ? 'border-blue-500 text-blue-600'
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                      }`}
-                    >
-                      文件上传
-                    </button>
-                    <button
-                      onClick={() => setActiveTab('url')}
-                      className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                        activeTab === 'url'
-                          ? 'border-blue-500 text-blue-600'
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                      }`}
-                    >
-                      网页/视频
-                    </button>
-                    <button
-                      onClick={() => setActiveTab('topic')}
-                      className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                        activeTab === 'topic'
-                          ? 'border-blue-500 text-blue-600'
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                      }`}
-                    >
-                      主题生成 <span className="text-xs bg-blue-100 text-blue-800 px-1 py-0.5 rounded ml-1">Pro</span>
-                    </button>
-                  </nav>
-                </div>
+        {/* 核心操作区域 */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div className="p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">创建新的闪卡集</h2>
 
-                {/* 输入内容区域 */}
-                <div className="mb-8">
-                  {renderInputContent()}
-                </div>
-
-                {/* 生成按钮 */}
-                <div className="flex flex-col items-center">
-                  <button
-                    onClick={handleGenerateCards}
-                    disabled={isProcessing}
-                    className={`bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 flex items-center space-x-2 ${
-                      isProcessing ? 'opacity-70 cursor-not-allowed' : ''
-                    }`}
-                  >
-                    {isProcessing ? (
-                      <>
-                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        <span>生成中...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>生成闪卡</span>
-                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
-                      </>
-                    )}
-                  </button>
-                  
-                  {/* 状态消息 */}
-                  {processMessage && (
-                    <div className={`mt-3 text-center text-sm ${processMessage.includes('失败') || processMessage.includes('错误') ? 'text-red-600' : 'text-blue-600'}`}>
-                      {processMessage}
-                    </div>
-                  )}
-                </div>
-              </div>
+            {/* Tab切换 */}
+            <div className="border-b border-gray-200 mb-6">
+              <nav className="-mb-px flex space-x-8">
+                <button
+                  onClick={() => setActiveTab('text')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'text'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  文本输入
+                </button>
+                <button
+                  onClick={() => setActiveTab('file')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'file'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  文件上传
+                </button>
+                <button
+                  onClick={() => setActiveTab('url')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'url'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  网页
+                </button>
+                <button
+                  onClick={() => setActiveTab('topic')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'topic'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  主题生成 <span className="text-xs bg-blue-100 text-blue-800 px-1 py-0.5 rounded ml-1">Pro</span>
+                </button>
+              </nav>
             </div>
-          </div>
 
-          {/* AI配置侧边栏 */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-              <div className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">AI 配置</h3>
-                
-                <div className="space-y-4">
-                  {/* 难度设置 */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      难度级别
-                    </label>
-                    <select
-                      value={aiConfig.difficulty}
-                      onChange={(e) => setAiConfig({...aiConfig, difficulty: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="easy">简单</option>
-                      <option value="medium">中等</option>
-                      <option value="hard">困难</option>
-                    </select>
-                  </div>
+            {/* 输入内容区域 */}
+            <div className="mb-8">
+              {renderInputContent()}
+            </div>
 
-                  {/* 卡片数量 */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      卡片数量
-                    </label>
-                    <select
-                      value={aiConfig.cardCount}
-                      onChange={(e) => setAiConfig({...aiConfig, cardCount: parseInt(e.target.value)})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value={5}>5 张</option>
-                      <option value={10}>10 张</option>
-                      <option value={20}>20 张</option>
-                      <option value={50}>50 张</option>
-                    </select>
-                  </div>
+            {/* 生成按钮 */}
+            <div className="flex flex-col items-center">
+              <button
+                onClick={handleGenerateCards}
+                disabled={isProcessing}
+                className={`bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 flex items-center space-x-2 ${
+                  isProcessing ? 'opacity-70 cursor-not-allowed' : ''
+                }`}
+              >
+                {isProcessing ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>生成中...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>生成闪卡</span>
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                  </>
+                )}
+              </button>
 
-                  {/* 语言设置 */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      卡片语言
-                    </label>
-                    <select
-                      value={aiConfig.language}
-                      onChange={(e) => setAiConfig({...aiConfig, language: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="zh">中文</option>
-                      <option value="en">English</option>
-                      <option value="auto">自动检测</option>
-                    </select>
-                  </div>
-
-                  {/* 包含图片 */}
-                  <div>
-                    <label className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={aiConfig.includeImages}
-                        onChange={(e) => setAiConfig({...aiConfig, includeImages: e.target.checked})}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
-                      <span className="ml-2 text-sm text-gray-700">包含图片</span>
-                    </label>
-                    <p className="text-xs text-gray-500 mt-1">
-                      AI将尝试为卡片添加相关图片
-                    </p>
-                  </div>
+              {/* 状态消息 */}
+              {processMessage && (
+                <div className={`mt-3 text-center text-sm ${processMessage.includes('失败') || processMessage.includes('错误') ? 'text-red-600' : 'text-blue-600'}`}>
+                  {processMessage}
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

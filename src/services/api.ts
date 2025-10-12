@@ -56,7 +56,7 @@ class ApiService {
       });
 
       const result = await response.json();
-      
+
       if (!response.ok) {
         return {
           success: false,
@@ -67,6 +67,54 @@ class ApiService {
       return {
         success: true,
         cards: result.cards,
+      };
+    } catch (error) {
+      console.error('API调用错误:', error);
+      return {
+        success: false,
+        error: '网络错误或服务器不可用',
+      };
+    }
+  }
+
+  /**
+   * 从网页URL生成闪卡
+   * @param url 网页URL地址
+   * @param cardNumber 闪卡数量，默认10，范围1-50
+   * @param lang 语言，默认zh
+   */
+  async generateFlashcardsFromUrl(
+    url: string,
+    cardNumber: number = 10,
+    lang: string = 'zh'
+  ): Promise<{ success: boolean; cards?: Flashcard[]; error?: string; count?: number; crawledLength?: number }> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/flashcards/generate/url/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          url,
+          card_number: cardNumber,
+          lang
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        return {
+          success: false,
+          error: result.error || '生成闪卡失败',
+        };
+      }
+
+      return {
+        success: true,
+        cards: result.cards,
+        count: result.count,
+        crawledLength: result.crawled_length,
       };
     } catch (error) {
       console.error('API调用错误:', error);
