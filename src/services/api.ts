@@ -4,6 +4,26 @@ import { Flashcard } from '@/types/flashcard';
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 /**
+ * 章节数据结构
+ */
+interface Subsection {
+  subsection: string;
+  description?: string;
+}
+
+interface Section {
+  section: string;
+  description?: string;
+  subsections?: Subsection[];
+}
+
+interface Chapter {
+  chapter: string;
+  description?: string;
+  sections?: Section[];
+}
+
+/**
  * API服务类，用于与后端API交互
  */
 class ApiService {
@@ -21,7 +41,7 @@ class ApiService {
       });
 
       const result = await response.json();
-      
+
       if (!response.ok) {
         return {
           success: false,
@@ -126,6 +146,52 @@ class ApiService {
   }
 
   /**
+   * 从文件生成大纲
+   * @param file 上传的文件
+   * @param lang 语言，默认zh
+   */
+  async generateCatalogFromFile(
+    file: File,
+    lang: string = 'zh'
+  ): Promise<{ success: boolean; catalog?: Chapter[]; fileName?: string; error?: string }> {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('lang', lang);
+
+      const response = await fetch(`${API_BASE_URL}/catalog/file/`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      console.log('generateCatalogFromFile API raw response:', result);
+      console.log('result.catalog type:', typeof result.catalog);
+      console.log('result.catalog isArray:', Array.isArray(result.catalog));
+
+      if (!response.ok) {
+        return {
+          success: false,
+          error: result.error || '生成大纲失败',
+        };
+      }
+
+      return {
+        success: true,
+        catalog: result.catalog,
+        fileName: result.file_name,
+      };
+    } catch (error) {
+      console.error('API调用错误:', error);
+      return {
+        success: false,
+        error: '网络错误或服务器不可用',
+      };
+    }
+  }
+
+  /**
    * 健康检查
    */
   async healthCheck(): Promise<boolean> {
@@ -140,3 +206,4 @@ class ApiService {
 }
 
 export const apiService = new ApiService();
+export type { Chapter, Section, Subsection };

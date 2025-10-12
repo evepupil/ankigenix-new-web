@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import { CreditCardIcon, ClockIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import ResultsList from '@/components/ResultsList';
 import ToastContainer, { ToastMessage } from '@/components/Toast';
-import { apiService } from '@/services/api';
+import CatalogSelectionModal from '@/components/CatalogSelectionModal';
+import { apiService, Chapter } from '@/services/api';
 import { Flashcard, FlashcardSet } from '@/types/flashcard';
 
 /**
@@ -75,6 +76,11 @@ export default function Dashboard() {
   // 拖拽状态
   const [isDragging, setIsDragging] = useState(false);
 
+  // 大纲选择对话框状态
+  const [showCatalogModal, setShowCatalogModal] = useState(false);
+  const [catalogData, setCatalogData] = useState<Chapter[]>([]);
+  const [catalogFileName, setCatalogFileName] = useState('');
+
   /**
    * 显示 Toast 通知
    */
@@ -102,26 +108,73 @@ export default function Dashboard() {
   const handleGenerateCards = async () => {
     if (isProcessing) return; // 防止重复提交
 
+    // 验证输入内容
+    if (activeTab === 'text' && !textInput.trim()) {
+      showToast('warning', '请输入学习内容', '请在文本框中粘贴你的学习材料');
+      return;
+    }
+
+    if (activeTab === 'file' && !selectedFile) {
+      showToast('warning', '请上传文件', '请选择或拖拽文件到上传区域');
+      return;
+    }
+
+    if (activeTab === 'url' && !urlInput.trim()) {
+      showToast('warning', '请输入网页链接', '请输入有效的网页URL地址');
+      return;
+    }
+
+    if (activeTab === 'topic' && !topicInput.trim()) {
+      showToast('warning', '请输入学习主题', '例如：高中数学函数、英语语法等');
+      return;
+    }
+
     setIsProcessing(true);
 
     try {
       let result;
       let inputTitle = '';
 
-      if (activeTab === 'text' && textInput.trim()) {
+      if (activeTab === 'text') {
         // 文本生成
         result = await apiService.generateFlashcardsFromText(textInput);
         inputTitle = `文本生成 - ${textInput.substring(0, 30)}${textInput.length > 30 ? '...' : ''}`;
-      } else if (activeTab === 'file' && selectedFile) {
-        // 文件生成
-        result = await apiService.generateFlashcardsFromFile(selectedFile);
-        inputTitle = `文件生成 - ${selectedFile.name}`;
-      } else if (activeTab === 'url' && urlInput.trim()) {
+      } else if (activeTab === 'file') {
+        // 文件生成：先生成大纲，让用户选择章节
+        showToast('info', '正在分析文件大纲', '请稍候...');
+
+        const catalogResult = await apiService.generateCatalogFromFile(selectedFile);
+
+        console.log('Catalog API response:', catalogResult);
+
+        if (!catalogResult.success || !catalogResult.catalog) {
+          showToast('error', '大纲生成失败', catalogResult.error || '未知错误');
+          setIsProcessing(false);
+          return;
+        }
+
+        // 验证 catalog 是否为数组
+        if (!Array.isArray(catalogResult.catalog)) {
+          console.error('Catalog is not an array:', catalogResult.catalog);
+          showToast('error', '大纲数据格式错误', '服务器返回的数据格式不正确');
+          setIsProcessing(false);
+          return;
+        }
+
+        // 显示大纲选择对话框
+        setCatalogData(catalogResult.catalog);
+        setCatalogFileName(catalogResult.fileName || selectedFile.name);
+        setShowCatalogModal(true);
+        setIsProcessing(false);
+        return; // 等待用户选择章节
+
+      } else if (activeTab === 'url') {
         // 网页生成
         result = await apiService.generateFlashcardsFromUrl(urlInput, 10, 'zh');
         inputTitle = `网页生成 - ${urlInput}`;
-      } else {
-        showToast('warning', '请提供有效的输入内容');
+      } else if (activeTab === 'topic') {
+        // 主题生成 (暂未实现)
+        showToast('info', '功能开发中', '主题生成功能即将上线');
         setIsProcessing(false);
         return;
       }
@@ -193,6 +246,19 @@ export default function Dashboard() {
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  /**
+   * 处理大纲选择确认
+   */
+  const handleCatalogConfirm = async (selectedChapters: Chapter[]) => {
+    setShowCatalogModal(false);
+
+    // TODO: 这里应该调用后端API，根据选中的章节生成闪卡
+    // 目前生成接口还没做，先显示提示
+    showToast('info', '功能开发中', `已选择 ${selectedChapters.length} 个章节，闪卡生成接口开发中...`);
+
+    console.log('选中的章节:', selectedChapters);
   };
 
   /**
@@ -521,6 +587,15 @@ export default function Dashboard() {
 
       {/* Toast 通知容器 */}
       <ToastContainer toasts={toasts} onClose={closeToast} />
+
+      {/* 大纲选择对话框 */}
+      <CatalogSelectionModal
+        isOpen={showCatalogModal}
+        catalog={catalogData}
+        fileName={catalogFileName}
+        onClose={() => setShowCatalogModal(false)}
+        onConfirm={handleCatalogConfirm}
+      />
     </div>
   );
 }
