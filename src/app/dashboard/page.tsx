@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronDownIcon, CreditCardIcon, ClockIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
+import { CreditCardIcon, ClockIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import ResultsList from '@/components/ResultsList';
 import ToastContainer, { ToastMessage } from '@/components/Toast';
 import { apiService } from '@/services/api';
@@ -286,13 +286,13 @@ export default function Dashboard() {
         return (
           <div className="space-y-4">
             <label className="block text-sm font-medium text-gray-700">
-              输入学习内容
+              学习内容
             </label>
             <textarea
               value={textInput}
               onChange={(e) => setTextInput(e.target.value)}
-              placeholder="粘贴您的学习材料，支持文本、笔记、文档内容等..."
-              className="w-full h-40 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              placeholder="粘贴你的学习材料..."
+              className="w-full h-40 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent resize-none"
             />
           </div>
         );
@@ -300,13 +300,13 @@ export default function Dashboard() {
         return (
           <div className="space-y-4">
             <label className="block text-sm font-medium text-gray-700">
-              上传文件
+              文件
             </label>
             <div
               className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${
                 isDragging
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-300 hover:border-blue-400'
+                  ? 'border-gray-900 bg-gray-50'
+                  : 'border-gray-300 hover:border-gray-400'
               }`}
               onClick={triggerFileSelect}
               onDragEnter={handleDragEnter}
@@ -315,23 +315,23 @@ export default function Dashboard() {
               onDrop={handleDrop}
             >
               <div className="space-y-2">
-                <div className="text-gray-500">
+                <div className="text-gray-400">
                   <svg className="mx-auto h-12 w-12" stroke="currentColor" fill="none" viewBox="0 0 48 48">
                     <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
                 <div className="text-sm text-gray-600">
-                  <span className="font-medium text-blue-600 hover:text-blue-500">
-                    点击上传文件
+                  <span className="font-medium text-gray-900 hover:text-gray-700">
+                    点击上传
                   </span>
                   <span> 或拖拽文件到此处</span>
                 </div>
                 <p className="text-xs text-gray-500">
-                  支持 PDF, DOC, DOCX, TXT, MD 等格式，最大 10MB
+                  PDF、DOC、TXT、MD，最大 10MB
                 </p>
                 {selectedFile && (
-                  <div className="mt-4 p-3 bg-blue-50 rounded-md text-sm text-gray-700">
-                    已选择: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                  <div className="mt-4 p-3 bg-gray-100 rounded-md text-sm text-gray-700">
+                    {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
                   </div>
                 )}
               </div>
@@ -350,36 +350,30 @@ export default function Dashboard() {
         return (
           <div className="space-y-4">
             <label className="block text-sm font-medium text-gray-700">
-              输入网页链接
+              网页链接
             </label>
             <input
               type="url"
               value={urlInput}
               onChange={(e) => setUrlInput(e.target.value)}
               placeholder="https://example.com"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
             />
-            <p className="text-sm text-gray-500">
-              支持网页文章、博客等内容源，AI将自动爬取网页内容并生成闪卡
-            </p>
           </div>
         );
       case 'topic':
         return (
           <div className="space-y-4">
             <label className="block text-sm font-medium text-gray-700">
-              主题生成 <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full ml-2">Pro</span>
+              学习主题
             </label>
             <input
               type="text"
               value={topicInput}
               onChange={(e) => setTopicInput(e.target.value)}
-              placeholder="例如：高中数学函数、英语语法、历史事件等"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="例如：高中数学函数、英语语法..."
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
             />
-            <p className="text-sm text-gray-500">
-              AI将根据主题自动生成相关的学习内容和闪卡
-            </p>
           </div>
         );
       default:
@@ -443,49 +437,50 @@ export default function Dashboard() {
             <h2 className="text-xl font-semibold text-gray-900 mb-6">创建新的闪卡集</h2>
 
             {/* Tab切换 */}
-            <div className="border-b border-gray-200 mb-6">
-              <nav className="-mb-px flex space-x-8">
+            <div className="mb-6">
+              <div className="inline-flex bg-gray-100 rounded-lg p-1">
                 <button
                   onClick={() => setActiveTab('text')}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                  className={`px-4 py-2 rounded-md font-medium text-sm transition-all ${
                     activeTab === 'text'
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
-                  文本输入
+                  文本
                 </button>
                 <button
                   onClick={() => setActiveTab('file')}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                  className={`px-4 py-2 rounded-md font-medium text-sm transition-all ${
                     activeTab === 'file'
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
-                  文件上传
+                  文件
                 </button>
                 <button
                   onClick={() => setActiveTab('url')}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                  className={`px-4 py-2 rounded-md font-medium text-sm transition-all ${
                     activeTab === 'url'
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
                   网页
                 </button>
                 <button
                   onClick={() => setActiveTab('topic')}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                  className={`px-4 py-2 rounded-md font-medium text-sm transition-all flex items-center space-x-1 ${
                     activeTab === 'topic'
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
-                  主题生成 <span className="text-xs bg-blue-100 text-blue-800 px-1 py-0.5 rounded ml-1">Pro</span>
+                  <span>主题</span>
+                  <span className="text-xs bg-gradient-to-r from-blue-600 to-purple-600 text-white px-1.5 py-0.5 rounded">Pro</span>
                 </button>
-              </nav>
+              </div>
             </div>
 
             {/* 输入内容区域 */}
@@ -498,25 +493,20 @@ export default function Dashboard() {
               <button
                 onClick={handleGenerateCards}
                 disabled={isProcessing}
-                className={`bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 flex items-center space-x-2 ${
-                  isProcessing ? 'opacity-70 cursor-not-allowed' : ''
+                className={`bg-gray-900 hover:bg-gray-800 text-white font-medium py-3 px-10 rounded-lg transition-all ${
+                  isProcessing ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-lg'
                 }`}
               >
                 {isProcessing ? (
-                  <>
-                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <div className="flex items-center space-x-2">
+                    <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    <span>生成中...</span>
-                  </>
+                    <span>生成中</span>
+                  </div>
                 ) : (
-                  <>
-                    <span>生成闪卡</span>
-                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                  </>
+                  '开始生成'
                 )}
               </button>
             </div>
