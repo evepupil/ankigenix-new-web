@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronDownIcon, CreditCardIcon, ClockIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import ResultsList from '@/components/ResultsList';
+import ToastContainer, { ToastMessage } from '@/components/Toast';
 import { apiService } from '@/services/api';
 import { Flashcard, FlashcardSet } from '@/types/flashcard';
 
@@ -41,7 +42,9 @@ export default function Dashboard() {
 
   // 处理状态
   const [isProcessing, setIsProcessing] = useState(false);
-  const [processMessage, setProcessMessage] = useState('');
+
+  // Toast 通知列表
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   // 生成的闪卡列表
   const [generatedCards, setGeneratedCards] = useState<Flashcard[]>([]);
@@ -70,13 +73,33 @@ export default function Dashboard() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   /**
+   * 显示 Toast 通知
+   */
+  const showToast = (type: 'success' | 'error' | 'info' | 'warning', title: string, message?: string) => {
+    const newToast: ToastMessage = {
+      id: `toast-${Date.now()}`,
+      type,
+      title,
+      message,
+      duration: 3000,
+    };
+    setToasts(prev => [...prev, newToast]);
+  };
+
+  /**
+   * 关闭 Toast 通知
+   */
+  const closeToast = (id: string) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  };
+
+  /**
    * 处理生成闪卡的操作
    */
   const handleGenerateCards = async () => {
     if (isProcessing) return; // 防止重复提交
 
     setIsProcessing(true);
-    setProcessMessage('正在生成闪卡...');
 
     try {
       let result;
@@ -95,7 +118,7 @@ export default function Dashboard() {
         result = await apiService.generateFlashcardsFromUrl(urlInput, 10, 'zh');
         inputTitle = `网页生成 - ${urlInput}`;
       } else {
-        setProcessMessage('请提供有效的输入内容');
+        showToast('warning', '请提供有效的输入内容');
         setIsProcessing(false);
         return;
       }
@@ -150,18 +173,20 @@ export default function Dashboard() {
         };
 
         setTaskHistory(prev => [newTask, ...prev]);
-        setProcessMessage(`成功生成 ${cardsWithIds.length} 张闪卡`);
+
+        // 显示成功提示
+        showToast('success', '生成成功', `成功生成 ${cardsWithIds.length} 张闪卡，正在跳转到预览页面...`);
 
         // 延迟后跳转到预览页面
         setTimeout(() => {
           router.push('/preview');
-        }, 1000);
+        }, 1500);
       } else {
-        setProcessMessage(result.error || '生成闪卡失败');
+        showToast('error', '生成失败', result.error || '未知错误');
       }
     } catch (error) {
       console.error('生成闪卡时出错:', error);
-      setProcessMessage('生成闪卡时发生错误');
+      showToast('error', '生成失败', '发生错误，请稍后重试');
     } finally {
       setIsProcessing(false);
     }
@@ -177,18 +202,18 @@ export default function Dashboard() {
       // 文件类型验证
       const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain', 'text/markdown'];
       if (!validTypes.includes(file.type) && !file.name.match(/\.(pdf|doc|docx|txt|md)$/i)) {
-        setProcessMessage('不支持的文件类型。请上传 PDF, DOC, DOCX, TXT, 或 MD 文件。');
+        showToast('error', '文件类型不支持', '请上传 PDF, DOC, DOCX, TXT 或 MD 文件');
         return;
       }
-      
+
       // 文件大小限制 (10MB)
       if (file.size > 10 * 1024 * 1024) {
-        setProcessMessage('文件大小不能超过 10MB');
+        showToast('error', '文件过大', '文件大小不能超过 10MB');
         return;
       }
-      
+
       setSelectedFile(file);
-      setProcessMessage(`已选择文件: ${file.name}`);
+      showToast('info', '文件已选择', `${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
     }
   };
 
@@ -410,7 +435,7 @@ export default function Dashboard() {
             </div>
 
             {/* 生成按钮 */}
-            <div className="flex flex-col items-center">
+            <div className="flex justify-center">
               <button
                 onClick={handleGenerateCards}
                 disabled={isProcessing}
@@ -435,13 +460,6 @@ export default function Dashboard() {
                   </>
                 )}
               </button>
-
-              {/* 状态消息 */}
-              {processMessage && (
-                <div className={`mt-3 text-center text-sm ${processMessage.includes('失败') || processMessage.includes('错误') ? 'text-red-600' : 'text-blue-600'}`}>
-                  {processMessage}
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -451,6 +469,9 @@ export default function Dashboard() {
           <ResultsList taskHistory={taskHistory} />
         </div>
       </div>
+
+      {/* Toast 通知容器 */}
+      <ToastContainer toasts={toasts} onClose={closeToast} />
     </div>
   );
 }
