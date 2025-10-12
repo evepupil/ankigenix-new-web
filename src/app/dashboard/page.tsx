@@ -72,6 +72,9 @@ export default function Dashboard() {
   // 文件输入引用
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // 拖拽状态
+  const [isDragging, setIsDragging] = useState(false);
+
   /**
    * 显示 Toast 通知
    */
@@ -199,21 +202,69 @@ export default function Dashboard() {
     const files = e.target.files;
     if (files && files.length > 0) {
       const file = files[0];
-      // 文件类型验证
-      const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain', 'text/markdown'];
-      if (!validTypes.includes(file.type) && !file.name.match(/\.(pdf|doc|docx|txt|md)$/i)) {
-        showToast('error', '文件类型不支持', '请上传 PDF, DOC, DOCX, TXT 或 MD 文件');
-        return;
-      }
+      validateAndSetFile(file);
+    }
+  };
 
-      // 文件大小限制 (10MB)
-      if (file.size > 10 * 1024 * 1024) {
-        showToast('error', '文件过大', '文件大小不能超过 10MB');
-        return;
-      }
+  /**
+   * 验证并设置文件
+   */
+  const validateAndSetFile = (file: File) => {
+    // 文件类型验证
+    const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain', 'text/markdown'];
+    if (!validTypes.includes(file.type) && !file.name.match(/\.(pdf|doc|docx|txt|md)$/i)) {
+      showToast('error', '文件类型不支持', '请上传 PDF, DOC, DOCX, TXT 或 MD 文件');
+      return;
+    }
 
-      setSelectedFile(file);
-      showToast('info', '文件已选择', `${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
+    // 文件大小限制 (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      showToast('error', '文件过大', '文件大小不能超过 10MB');
+      return;
+    }
+
+    setSelectedFile(file);
+    showToast('info', '文件已选择', `${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
+  };
+
+  /**
+   * 处理拖拽进入
+   */
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  /**
+   * 处理拖拽经过
+   */
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  /**
+   * 处理拖拽离开
+   */
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  /**
+   * 处理文件放下
+   */
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      validateAndSetFile(file);
     }
   };
 
@@ -251,9 +302,17 @@ export default function Dashboard() {
             <label className="block text-sm font-medium text-gray-700">
               上传文件
             </label>
-            <div 
-              className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors cursor-pointer"
+            <div
+              className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${
+                isDragging
+                  ? 'border-blue-500 bg-blue-50'
+                  : 'border-gray-300 hover:border-blue-400'
+              }`}
               onClick={triggerFileSelect}
+              onDragEnter={handleDragEnter}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
             >
               <div className="space-y-2">
                 <div className="text-gray-500">
