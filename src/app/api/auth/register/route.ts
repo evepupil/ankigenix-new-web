@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
+import { supabaseServer } from '@/lib/supabase/server';
 
 /**
  * POST /api/auth/register
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 注册用户
-    const { data, error } = await supabase.auth.signUp({
+    const { data, error } = await supabaseServer.auth.signUp({
       email,
       password,
       options: {

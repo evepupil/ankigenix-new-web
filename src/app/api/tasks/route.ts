@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
+import { supabaseServer } from '@/lib/supabase/server';
 
 /**
  * GET /api/tasks
@@ -12,7 +12,7 @@ import { supabase } from '@/lib/supabase/client';
 export async function GET(request: NextRequest) {
   try {
     // 获取当前用户
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const { data: { user }, error: authError } = await supabaseServer.auth.getUser();
 
     if (authError || !user) {
       return NextResponse.json(
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     const offset = parseInt(searchParams.get('offset') || '0');
 
     // 构建查询
-    let query = supabase
+    let query = supabaseServer
       .from('task_info')
       .select('*', { count: 'exact' })
       .eq('user_id', user.id);

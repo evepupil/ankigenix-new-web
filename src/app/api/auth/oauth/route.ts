@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
+import { supabaseServer } from '@/lib/supabase/server';
 
 /**
  * POST /api/auth/oauth
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     const redirectTo = `${request.nextUrl.origin}/auth/callback`;
 
     // 发起 OAuth 登录
-    const { data, error } = await supabase.auth.signInWithOAuth({
+    const { data, error } = await supabaseServer.auth.signInWithOAuth({
       provider: provider as any,
       options: {
         redirectTo,

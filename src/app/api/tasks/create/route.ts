@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
+import { supabaseServer } from '@/lib/supabase/server';
 import type { TaskInfoInsert } from '@/types/database';
 
 /**
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 获取当前用户
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const { data: { user }, error: authError } = await supabaseServer.auth.getUser();
 
     if (authError || !user) {
       return NextResponse.json(
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     };
 
     // 插入数据库
-    const { data: task, error: insertError } = await supabase
+    const { data: task, error: insertError } = await supabaseServer
       .from('task_info')
       .insert(taskData)
       .select()

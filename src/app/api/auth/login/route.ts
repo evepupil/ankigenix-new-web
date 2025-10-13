@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
+import { supabaseServer } from '@/lib/supabase/server';
 
 /**
  * POST /api/auth/login
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 登录
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabaseServer.auth.signInWithPassword({
       email,
       password,
     });
