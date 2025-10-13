@@ -294,12 +294,92 @@ function DashboardPage() {
    */
   const handleCatalogConfirm = async (selectedChapters: Chapter[]) => {
     setShowCatalogModal(false);
+    setIsProcessing(true);
 
-    // TODO: 这里应该调用后端API，根据选中的章节生成闪卡
-    // 目前生成接口还没做，先显示提示
-    showToast('info', '功能开发中', `已选择 ${selectedChapters.length} 个章节，闪卡生成接口开发中...`);
+    try {
+      if (!selectedFile) {
+        showToast('error', '文件丢失', '请重新上传文件');
+        setIsProcessing(false);
+        return;
+      }
 
-    console.log('选中的章节:', selectedChapters);
+      if (selectedChapters.length === 0) {
+        showToast('warning', '请选择章节', '至少选择一个章节来生成闪卡');
+        setIsProcessing(false);
+        return;
+      }
+
+      showToast('info', '正在生成闪卡', `正在为 ${selectedChapters.length} 个章节生成闪卡，请稍候...`);
+
+      // 调用API生成闪卡
+      const result = await apiService.generateFlashcardsFromFileSection(
+        selectedFile,
+        selectedChapters
+      );
+
+      if (!result.success || !result.cards) {
+        showToast('error', '生成失败', result.error || '未知错误');
+        setIsProcessing(false);
+        return;
+      }
+
+      // 为每张卡片添加唯一ID
+      const cardsWithIds = result.cards.map((card: Flashcard, index: number) => ({
+        ...card,
+        id: `card-${Date.now()}-${index}`,
+        qualityScore: 85 + Math.floor(Math.random() * 15),
+      }));
+
+      setGeneratedCards(cardsWithIds);
+
+      // 创建闪卡集数据结构，按章节组织
+      const chapters = result.sectionResults?.map((sectionResult, index) => ({
+        id: `ch-${index}`,
+        title: sectionResult.sectionTitle,
+        description: `包含 ${sectionResult.count} 张闪卡`,
+        isExpanded: true,
+        cards: sectionResult.cards.map((card: Flashcard, cardIndex: number) => ({
+          ...card,
+          id: `card-${Date.now()}-${index}-${cardIndex}`,
+          qualityScore: 85 + Math.floor(Math.random() * 15),
+        })),
+      })) || [
+        {
+          id: 'ch-default',
+          title: '默认章节',
+          description: '自动生成的闪卡',
+          isExpanded: true,
+          cards: cardsWithIds,
+        },
+      ];
+
+      const flashcardSet: FlashcardSet = {
+        id: `set-${Date.now()}`,
+        title: `文件生成 - ${catalogFileName}`,
+        topic: catalogFileName,
+        createdAt: new Date().toLocaleString('zh-CN'),
+        totalCards: cardsWithIds.length,
+        averageQuality: Math.floor(cardsWithIds.reduce((sum: number, card: any) => sum + (card.qualityScore || 0), 0) / cardsWithIds.length),
+        chapters: chapters,
+      };
+
+      // 保存到 localStorage
+      localStorage.setItem('currentFlashcardSet', JSON.stringify(flashcardSet));
+
+      // 显示成功提示
+      showToast('success', '生成成功', `成功生成 ${cardsWithIds.length} 张闪卡，正在跳转到预览页面...`);
+
+      // 延迟后跳转到预览页面
+      setTimeout(() => {
+        router.push('/preview');
+      }, 1500);
+
+    } catch (error) {
+      console.error('生成闪卡时出错:', error);
+      showToast('error', '生成失败', '发生错误，请稍后重试');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   /**

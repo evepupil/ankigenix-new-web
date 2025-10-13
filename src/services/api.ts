@@ -250,6 +250,112 @@ class ApiService {
   }
 
   /**
+   * 根据文件和选中的章节生成闪卡
+   * @param file 上传的文件
+   * @param chapters 选中的章节列表
+   * @param cardNumber 每个章节的卡片数量，可选
+   * @param lang 语言，默认zh
+   */
+  async generateFlashcardsFromFileSection(
+    file: File,
+    chapters: Chapter[],
+    cardNumber?: number,
+    lang: string = 'zh'
+  ): Promise<{
+    success: boolean;
+    cards?: Flashcard[];
+    error?: string;
+    sectionResults?: Array<{
+      sectionTitle: string;
+      cards: Flashcard[];
+      count: number;
+    }>;
+  }> {
+    try {
+      // 收集所有章节标题
+      const sectionTitles: string[] = [];
+
+      chapters.forEach(chapter => {
+        // 添加章节标题
+        sectionTitles.push(chapter.chapter);
+
+        // 添加section标题（如果有）
+        if (chapter.sections && chapter.sections.length > 0) {
+          chapter.sections.forEach(section => {
+            sectionTitles.push(`${chapter.chapter} - ${section.section}`);
+          });
+        }
+      });
+
+      // 为每个章节生成闪卡
+      const allCards: Flashcard[] = [];
+      const sectionResults: Array<{
+        sectionTitle: string;
+        cards: Flashcard[];
+        count: number;
+      }> = [];
+
+      for (const sectionTitle of sectionTitles) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('section_title', sectionTitle);
+        if (cardNumber) {
+          formData.append('card_number', cardNumber.toString());
+        }
+        formData.append('lang', lang);
+
+        const token = getToken();
+        const headers: HeadersInit = {};
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const response = await fetch(`${API_BASE_URL}/flashcards/generate/file/section/`, {
+          method: 'POST',
+          headers: headers,
+          body: formData,
+        });
+
+        await handleResponse(response);
+        const result = await response.json();
+
+        if (!response.ok) {
+          console.error(`生成章节"${sectionTitle}"闪卡失败:`, result.error);
+          continue; // 跳过失败的章节，继续处理其他章节
+        }
+
+        if (result.cards && result.cards.length > 0) {
+          allCards.push(...result.cards);
+          sectionResults.push({
+            sectionTitle: result.section_title || sectionTitle,
+            cards: result.cards,
+            count: result.count || result.cards.length,
+          });
+        }
+      }
+
+      if (allCards.length === 0) {
+        return {
+          success: false,
+          error: '所有章节的闪卡生成都失败了',
+        };
+      }
+
+      return {
+        success: true,
+        cards: allCards,
+        sectionResults: sectionResults,
+      };
+    } catch (error) {
+      console.error('API调用错误:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : '网络错误或服务器不可用',
+      };
+    }
+  }
+
+  /**
    * 健康检查
    */
   async healthCheck(): Promise<boolean> {
