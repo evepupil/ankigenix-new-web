@@ -73,13 +73,35 @@ interface Chapter {
 class ApiService {
   /**
    * 从文本生成闪卡
+   * @param text 文本内容
+   * @param taskId 任务ID（可选）
+   * @param cardNumber 卡片数量（可选）
+   * @param lang 语言，默认zh
    */
-  async generateFlashcardsFromText(text: string): Promise<{ success: boolean; cards?: Flashcard[]; error?: string }> {
+  async generateFlashcardsFromText(
+    text: string,
+    taskId?: string,
+    cardNumber?: number,
+    lang: string = 'zh'
+  ): Promise<{ success: boolean; cards?: Flashcard[]; error?: string }> {
     try {
+      const requestBody: any = { text };
+
+      // 添加可选参数
+      if (taskId) {
+        requestBody.task_id = taskId;
+      }
+      if (cardNumber) {
+        requestBody.card_number = cardNumber;
+      }
+      if (lang) {
+        requestBody.lang = lang;
+      }
+
       const response = await fetch(`${API_BASE_URL}/flashcards/generate/text/`, {
         method: 'POST',
         headers: getAuthHeaders(),
-        body: JSON.stringify({ text }),
+        body: JSON.stringify(requestBody),
       });
 
       await handleResponse(response);

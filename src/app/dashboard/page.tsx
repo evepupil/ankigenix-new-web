@@ -192,8 +192,8 @@ function DashboardPage() {
       let inputTitle = '';
 
       if (activeTab === 'text') {
-        // 文本生成
-        result = await apiService.generateFlashcardsFromText(textInput);
+        // 文本生成 - 传递 taskId 给后端
+        result = await apiService.generateFlashcardsFromText(textInput, taskId || undefined);
         inputTitle = `文本生成 - ${textInput.substring(0, 30)}${textInput.length > 30 ? '...' : ''}`;
       } else if (activeTab === 'file') {
         // 文件生成：先生成大纲，让用户选择章节
