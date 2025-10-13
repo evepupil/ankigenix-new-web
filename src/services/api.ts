@@ -128,12 +128,30 @@ class ApiService {
   }
 
   /**
-   * 从文件生成闪卡
+   * 从文件生成闪卡（直接生成，不经过章节选择）
+   * @param file 上传的文件
+   * @param taskId 任务ID（可选）
+   * @param cardNumber 卡片数量（可选）
+   * @param lang 语言，默认zh
    */
-  async generateFlashcardsFromFile(file: File): Promise<{ success: boolean; cards?: Flashcard[]; error?: string }> {
+  async generateFlashcardsFromFile(
+    file: File,
+    taskId?: string,
+    cardNumber?: number,
+    lang: string = 'zh'
+  ): Promise<{ success: boolean; cards?: Flashcard[]; error?: string }> {
     try {
       const formData = new FormData();
       formData.append('file', file);
+
+      // 添加可选参数
+      if (taskId) {
+        formData.append('task_id', taskId);
+      }
+      if (cardNumber) {
+        formData.append('card_number', cardNumber.toString());
+      }
+      formData.append('lang', lang);
 
       const token = getToken();
       const headers: HeadersInit = {};
@@ -173,23 +191,32 @@ class ApiService {
   /**
    * 从网页URL生成闪卡
    * @param url 网页URL地址
+   * @param taskId 任务ID（可选）
    * @param cardNumber 闪卡数量，默认10，范围1-50
    * @param lang 语言，默认zh
    */
   async generateFlashcardsFromUrl(
     url: string,
+    taskId?: string,
     cardNumber: number = 10,
     lang: string = 'zh'
   ): Promise<{ success: boolean; cards?: Flashcard[]; error?: string; count?: number; crawledLength?: number }> {
     try {
+      const requestBody: any = {
+        url,
+        card_number: cardNumber,
+        lang
+      };
+
+      // 添加可选参数
+      if (taskId) {
+        requestBody.task_id = taskId;
+      }
+
       const response = await fetch(`${API_BASE_URL}/flashcards/generate/url/`, {
         method: 'POST',
         headers: getAuthHeaders(),
-        body: JSON.stringify({
-          url,
-          card_number: cardNumber,
-          lang
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       await handleResponse(response);
@@ -220,15 +247,22 @@ class ApiService {
   /**
    * 从文件生成大纲
    * @param file 上传的文件
+   * @param taskId 任务ID（可选）
    * @param lang 语言，默认zh
    */
   async generateCatalogFromFile(
     file: File,
+    taskId?: string,
     lang: string = 'zh'
   ): Promise<{ success: boolean; catalog?: Chapter[]; fileName?: string; error?: string }> {
     try {
       const formData = new FormData();
       formData.append('file', file);
+
+      // 添加可选参数
+      if (taskId) {
+        formData.append('task_id', taskId);
+      }
       formData.append('lang', lang);
 
       const token = getToken();
@@ -275,12 +309,14 @@ class ApiService {
    * 根据文件和选中的章节生成闪卡
    * @param file 上传的文件
    * @param chapters 选中的章节列表
+   * @param taskId 任务ID（可选）
    * @param cardNumber 每个章节的卡片数量，可选
    * @param lang 语言，默认zh
    */
   async generateFlashcardsFromFileSection(
     file: File,
     chapters: Chapter[],
+    taskId?: string,
     cardNumber?: number,
     lang: string = 'zh'
   ): Promise<{
@@ -330,6 +366,11 @@ class ApiService {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('section_title', sectionTitle);
+
+        // 添加可选参数
+        if (taskId) {
+          formData.append('task_id', taskId);
+        }
         if (cardNumber) {
           formData.append('card_number', cardNumber.toString());
         }

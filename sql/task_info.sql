@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS task_info (
   --   "file": {
   --     "name": "example.pdf",
   --     "type": "application/pdf",
-  --     "info": "文件元信息"
+  --     "info": "multimedia"
   --   },
   --   "web_url": "https://example.com",
   --   "topic": "主题关键词",

@@ -106,6 +106,9 @@ function DashboardPage() {
   const [catalogData, setCatalogData] = useState<Chapter[]>([]);
   const [catalogFileName, setCatalogFileName] = useState('');
 
+  // 当前任务ID（用于文件生成时传递给后端）
+  const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
+
   /**
    * 显示 Toast 通知
    */
@@ -181,6 +184,7 @@ function DashboardPage() {
       const taskData = await taskResponse.json();
       if (taskData.success && taskData.task) {
         taskId = taskData.task.id;
+        setCurrentTaskId(taskId); // 保存到状态，供后续使用
       }
     } catch (error) {
       console.error('创建任务记录失败:', error);
@@ -199,7 +203,7 @@ function DashboardPage() {
         // 文件生成：先生成大纲，让用户选择章节
         showToast('info', '正在分析文件大纲', '请稍候...');
 
-        const catalogResult = await apiService.generateCatalogFromFile(selectedFile);
+        const catalogResult = await apiService.generateCatalogFromFile(selectedFile, taskId || undefined);
 
         console.log('Catalog API response:', catalogResult);
 
@@ -225,8 +229,8 @@ function DashboardPage() {
         return; // 等待用户选择章节
 
       } else if (activeTab === 'url') {
-        // 网页生成
-        result = await apiService.generateFlashcardsFromUrl(urlInput, 10, 'zh');
+        // 网页生成 - 传递 taskId 给后端
+        result = await apiService.generateFlashcardsFromUrl(urlInput, taskId || undefined, 10, 'zh');
         inputTitle = `网页生成 - ${urlInput}`;
       } else if (activeTab === 'topic') {
         // 主题生成 (暂未实现)
@@ -311,10 +315,11 @@ function DashboardPage() {
 
       showToast('info', '正在生成闪卡', `正在为 ${selectedChapters.length} 个章节生成闪卡，请稍候...`);
 
-      // 调用API生成闪卡
+      // 调用API生成闪卡，传递taskId给后端
       const result = await apiService.generateFlashcardsFromFileSection(
         selectedFile,
-        selectedChapters
+        selectedChapters,
+        currentTaskId || undefined
       );
 
       if (!result.success || !result.cards) {
