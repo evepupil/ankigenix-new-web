@@ -105,26 +105,27 @@ export default function Register() {
    */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
-    
+    if (!validateForm()) return;
     setIsLoading(true);
-    
+    setErrors({});
     try {
-      // 模拟注册API调用
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // 模拟注册成功
-      console.log('注册成功:', formData);
-      
-      // 这里将来会处理真实的注册逻辑
-      // 比如发送验证邮件、跳转到验证页面等
-      
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          username: formData.name || undefined
+        })
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        setErrors({ general: data.error || '注册失败，请稍后重试' });
+      } else {
+        alert('注册成功');
+      }
     } catch (error) {
-      console.error('注册失败:', error);
-      setErrors({ general: '注册失败，请稍后重试' });
+      setErrors({ general: '网络错误，请稍后重试' });
     } finally {
       setIsLoading(false);
     }

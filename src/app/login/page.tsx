@@ -65,26 +65,23 @@ export default function Login() {
    */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
-    
+    if (!validateForm()) return;
     setIsLoading(true);
-    
+    setErrors({});
     try {
-      // 模拟登录API调用
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // 模拟登录成功
-      console.log('登录成功:', formData);
-      
-      // 这里将来会处理真实的登录逻辑
-      // 比如保存token、跳转到dashboard等
-      
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: formData.email, password: formData.password })
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        setErrors({ general: data.error || '登录失败，请检查邮箱和密码' });
+      } else {
+        alert('登录成功');
+      }
     } catch (error) {
-      console.error('登录失败:', error);
-      setErrors({ general: '登录失败，请检查邮箱和密码' });
+      setErrors({ general: '网络错误，请稍后重试' });
     } finally {
       setIsLoading(false);
     }
