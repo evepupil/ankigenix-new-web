@@ -1,19 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabase/server';
-import type { TaskInfoInsert } from '@/types/database';
 
 /**
  * POST /api/tasks/create
- * 创建新的闪卡生成任务
+ * 创建新任务
+ *
+ * 请求体：
+ * {
+ *   "task_type": "text" | "file" | "web" | "topic",
+ *   "workflow_type": "extract_catalog" | "direct_generate",
+ *   "input_data": {
+ *     "text"?: string,
+ *     "file"?: { name: string, type: string },
+ *     "web_url"?: string,
+ *     "topic"?: string,
+ *     "language"?: string,
+ *     "card_count"?: number
+ *   }
+ * }
  */
 export async function POST(request: NextRequest) {
   try {
-    // 获取请求体数据
-    const body = await request.json();
+    // 获取当前用户
+    const { data: { user }, error: authError } = await supabaseServer.auth.getUser();
 
-    // 验证必需字段
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Unauthorized. Please login first.' },
+        { status: 401 }
+      );
+    }
+
+    const body = await request.json();
     const { task_type, workflow_type, input_data } = body;
 
+    // 验证必需字段
     if (!task_type || !workflow_type || !input_data) {
       return NextResponse.json(
         { error: 'Missing required fields: task_type, workflow_type, input_data' },
@@ -25,7 +46,7 @@ export async function POST(request: NextRequest) {
     const validTaskTypes = ['text', 'file', 'web', 'topic'];
     if (!validTaskTypes.includes(task_type)) {
       return NextResponse.json(
-        { error: 'Invalid task_type. Must be one of: text, file, web, topic' },
+        { error: `Invalid task_type. Must be one of: ${validTaskTypes.join(', ')}` },
         { status: 400 }
       );
     }
@@ -34,54 +55,36 @@ export async function POST(request: NextRequest) {
     const validWorkflowTypes = ['extract_catalog', 'direct_generate'];
     if (!validWorkflowTypes.includes(workflow_type)) {
       return NextResponse.json(
-        { error: 'Invalid workflow_type. Must be one of: extract_catalog, direct_generate' },
+        { error: `Invalid workflow_type. Must be one of: ${validWorkflowTypes.join(', ')}` },
         { status: 400 }
       );
     }
 
-    // 获取当前用户
-    const { data: { user }, error: authError } = await supabaseServer.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized. Please login first.' },
-        { status: 401 }
-      );
-    }
-
-    // 构建任务数据
-    const taskData: TaskInfoInsert = {
-      user_id: user.id,
-      task_type,
-      workflow_type,
-      input_data,
-      status: body.status || 'processing', // 默认状态为 processing
-    };
-
-    // 插入数据库
-    const { data: task, error: insertError } = await supabaseServer
+    // 创建任务
+    const { data: task, error } = await supabaseServer
       .from('task_info')
-      .insert(taskData)
+      .insert({
+        user_id: user.id,
+        task_type,
+        workflow_type,
+        input_data,
+        status: 'processing', // 初始状态
+      })
       .select()
       .single();
 
-    if (insertError) {
-      console.error('Database insert error:', insertError);
+    if (error) {
+      console.error('Failed to create task:', error);
       return NextResponse.json(
-        { error: 'Failed to create task', details: insertError.message },
+        { error: 'Failed to create task', details: error.message },
         { status: 500 }
       );
     }
 
-    // 返回创建的任务
-    return NextResponse.json(
-      {
-        success: true,
-        task,
-        message: 'Task created successfully',
-      },
-      { status: 201 }
-    );
+    return NextResponse.json({
+      success: true,
+      task,
+    }, { status: 201 });
 
   } catch (error) {
     console.error('API Error:', error);

@@ -13,23 +13,30 @@ import {
   LightBulbIcon
 } from '@heroicons/react/24/outline';
 
-// 任务状态类型
-type TaskStatus = 'pending' | 'processing' | 'completed' | 'failed';
+// 任务状态类型（对应数据库的status字段）
+type TaskStatus = 'processing' | 'ai_processing' | 'file_uploading' | 'generating_catalog' | 'catalog_ready' | 'generating_cards' | 'completed' | 'failed';
 
-// 输入类型
-type InputType = 'text' | 'file' | 'url' | 'topic';
+// 输入类型（对应数据库的task_type字段）
+type InputType = 'text' | 'file' | 'web' | 'topic';
 
-// 任务数据接口
+// 任务数据接口（对应数据库的task_info表）
 interface Task {
   id: string;
-  title: string;
-  inputType: InputType;
+  user_id: string;
+  created_at: string;
+  updated_at: string;
+  task_type: InputType;
+  workflow_type: 'extract_catalog' | 'direct_generate';
+  input_data: {
+    text?: string;
+    file?: { name: string; type: string; info?: string };
+    web_url?: string;
+    topic?: string;
+    language?: string;
+    card_count?: number;
+    flashcard_set_id?: string;
+  };
   status: TaskStatus;
-  createdAt: string;
-  completedAt?: string;
-  cardCount?: number;
-  qualityScore?: number;
-  errorMessage?: string;
 }
 
 /**
@@ -37,17 +44,45 @@ interface Task {
  */
 const getStatusInfo = (status: TaskStatus) => {
   switch (status) {
-    case 'pending':
-      return {
-        icon: ClockIcon,
-        text: '等待中',
-        color: 'text-yellow-600',
-        bgColor: 'bg-yellow-100'
-      };
     case 'processing':
       return {
         icon: ClockIcon,
         text: '处理中',
+        color: 'text-blue-600',
+        bgColor: 'bg-blue-100'
+      };
+    case 'ai_processing':
+      return {
+        icon: ClockIcon,
+        text: 'AI处理中',
+        color: 'text-blue-600',
+        bgColor: 'bg-blue-100'
+      };
+    case 'file_uploading':
+      return {
+        icon: ClockIcon,
+        text: '文件上传中',
+        color: 'text-blue-600',
+        bgColor: 'bg-blue-100'
+      };
+    case 'generating_catalog':
+      return {
+        icon: ClockIcon,
+        text: '生成大纲中',
+        color: 'text-blue-600',
+        bgColor: 'bg-blue-100'
+      };
+    case 'catalog_ready':
+      return {
+        icon: ClockIcon,
+        text: '大纲已完成',
+        color: 'text-yellow-600',
+        bgColor: 'bg-yellow-100'
+      };
+    case 'generating_cards':
+      return {
+        icon: ClockIcon,
+        text: '生成闪卡中',
         color: 'text-blue-600',
         bgColor: 'bg-blue-100'
       };
@@ -85,7 +120,7 @@ const getInputTypeInfo = (inputType: InputType) => {
         text: '文件上传',
         color: 'text-purple-600'
       };
-    case 'url':
+    case 'web':
       return {
         icon: LinkIcon,
         text: '网页链接',
@@ -102,58 +137,55 @@ const getInputTypeInfo = (inputType: InputType) => {
 
 interface ResultsListProps {
   taskHistory?: Task[];
+  isLoading?: boolean;
 }
+
+/**
+ * 从任务数据生成标题
+ */
+const getTaskTitle = (task: Task): string => {
+  const { task_type, input_data } = task;
+
+  if (task_type === 'text' && input_data.text) {
+    const preview = input_data.text.substring(0, 30);
+    return `文本生成 - ${preview}${input_data.text.length > 30 ? '...' : ''}`;
+  }
+
+  if (task_type === 'file' && input_data.file) {
+    return input_data.file.name;
+  }
+
+  if (task_type === 'web' && input_data.web_url) {
+    return `网页生成 - ${input_data.web_url}`;
+  }
+
+  if (task_type === 'topic' && input_data.topic) {
+    return `主题生成 - ${input_data.topic}`;
+  }
+
+  return '未知任务';
+};
+
+/**
+ * 格式化时间显示
+ */
+const formatDateTime = (dateString: string): string => {
+  const date = new Date(dateString);
+  return date.toLocaleString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
 
 /**
  * 生成结果列表组件
  * 显示用户的历史任务和闪卡生成记录
  */
-export default function ResultsList({ taskHistory }: ResultsListProps = {}) {
-  // 如果传入了任务历史，则使用传入的历史数据，否则使用模拟数据
-  const [tasks, setTasks] = useState<Task[]>(taskHistory || [
-    {
-      id: '1',
-      title: '高中数学函数知识点',
-      inputType: 'text',
-      status: 'completed',
-      createdAt: '2024-01-15 14:30',
-      completedAt: '2024-01-15 14:32',
-      cardCount: 15,
-      qualityScore: 92
-    },
-    {
-      id: '2',
-      title: 'JavaScript基础教程.pdf',
-      inputType: 'file',
-      status: 'completed',
-      createdAt: '2024-01-15 10:15',
-      completedAt: '2024-01-15 10:18',
-      cardCount: 28,
-      qualityScore: 88
-    },
-    {
-      id: '3',
-      title: 'React官方文档 - Hooks',
-      inputType: 'url',
-      status: 'processing',
-      createdAt: '2024-01-15 16:45'
-    },
-    {
-      id: '4',
-      title: '英语语法基础',
-      inputType: 'topic',
-      status: 'pending',
-      createdAt: '2024-01-15 17:20'
-    },
-    {
-      id: '5',
-      title: '历史事件时间线',
-      inputType: 'text',
-      status: 'failed',
-      createdAt: '2024-01-15 09:30',
-      errorMessage: '内容格式不支持，请检查输入内容'
-    }
-  ]);
+export default function ResultsList({ taskHistory = [], isLoading = false }: ResultsListProps) {
+  const [tasks, setTasks] = useState<Task[]>(taskHistory);
 
   // 当传入的任务历史发生变化时，更新本地状态
   useEffect(() => {
@@ -179,16 +211,6 @@ export default function ResultsList({ taskHistory }: ResultsListProps = {}) {
     // 这里将来会实现真实的下载功能
   };
 
-  /**
-   * 格式化质量分数显示
-   */
-  const formatQualityScore = (score: number) => {
-    if (score >= 90) return { text: '优秀', color: 'text-green-600' };
-    if (score >= 80) return { text: '良好', color: 'text-blue-600' };
-    if (score >= 70) return { text: '一般', color: 'text-yellow-600' };
-    return { text: '需改进', color: 'text-red-600' };
-  };
-
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
       <div className="p-6">
@@ -199,13 +221,42 @@ export default function ResultsList({ taskHistory }: ResultsListProps = {}) {
           </div>
         </div>
 
+        {/* 骨架屏加载状态 */}
+        {isLoading && tasks.length === 0 && (
+          <div className="space-y-4 animate-pulse">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="border border-gray-200 rounded-lg p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-3 mb-2">
+                      <div className="h-5 w-5 bg-gray-200 rounded"></div>
+                      <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+                      <div className="h-5 w-16 bg-gray-200 rounded-full"></div>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <div className="h-3 bg-gray-200 rounded w-32"></div>
+                      <div className="h-3 bg-gray-200 rounded w-24"></div>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2 ml-4">
+                    <div className="h-8 w-16 bg-gray-200 rounded"></div>
+                    <div className="h-8 w-16 bg-gray-200 rounded"></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* 任务列表 */}
-        <div className="space-y-4">
+        {!isLoading && tasks.length > 0 && (
+          <div className="space-y-4">
           {tasks.map((task) => {
             const statusInfo = getStatusInfo(task.status);
-            const inputTypeInfo = getInputTypeInfo(task.inputType);
+            const inputTypeInfo = getInputTypeInfo(task.task_type);
             const StatusIcon = statusInfo.icon;
             const InputIcon = inputTypeInfo.icon;
+            const title = getTaskTitle(task);
 
             return (
               <div
@@ -216,33 +267,22 @@ export default function ResultsList({ taskHistory }: ResultsListProps = {}) {
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-2">
                       <InputIcon className={`h-5 w-5 ${inputTypeInfo.color}`} />
-                      <h3 className="font-medium text-gray-900">{task.title}</h3>
+                      <h3 className="font-medium text-gray-900">{title}</h3>
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusInfo.bgColor} ${statusInfo.color}`}>
                         <StatusIcon className="h-3 w-3 mr-1" />
                         {statusInfo.text}
                       </span>
                     </div>
-                    
+
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
-                      <span>创建时间: {task.createdAt}</span>
-                      {task.completedAt && (
-                        <span>完成时间: {task.completedAt}</span>
+                      <span>创建时间: {formatDateTime(task.created_at)}</span>
+                      {task.status === 'completed' && (
+                        <span>完成时间: {formatDateTime(task.updated_at)}</span>
                       )}
-                      {task.cardCount && (
-                        <span>卡片数量: {task.cardCount}</span>
-                      )}
-                      {task.qualityScore && (
-                        <span className={formatQualityScore(task.qualityScore).color}>
-                          质量评分: {task.qualityScore}分 ({formatQualityScore(task.qualityScore).text})
-                        </span>
+                      {task.input_data.card_count && (
+                        <span>卡片数量: {task.input_data.card_count}</span>
                       )}
                     </div>
-
-                    {task.errorMessage && (
-                      <div className="mt-2 text-sm text-red-600">
-                        错误信息: {task.errorMessage}
-                      </div>
-                    )}
                   </div>
 
                   {/* 操作按钮 */}
@@ -265,14 +305,14 @@ export default function ResultsList({ taskHistory }: ResultsListProps = {}) {
                         </button>
                       </>
                     )}
-                    {task.status === 'processing' && (
+                    {(task.status === 'processing' || task.status === 'ai_processing' || task.status === 'generating_cards' || task.status === 'generating_catalog' || task.status === 'file_uploading') && (
                       <div className="text-sm text-blue-600 font-medium">
                         处理中...
                       </div>
                     )}
-                    {task.status === 'pending' && (
+                    {task.status === 'catalog_ready' && (
                       <div className="text-sm text-yellow-600 font-medium">
-                        排队中...
+                        等待选择章节...
                       </div>
                     )}
                     {task.status === 'failed' && (
@@ -288,9 +328,10 @@ export default function ResultsList({ taskHistory }: ResultsListProps = {}) {
             );
           })}
         </div>
+        )}
 
         {/* 空状态 */}
-        {tasks.length === 0 && (
+        {!isLoading && tasks.length === 0 && (
           <div className="text-center py-12">
             <DocumentTextIcon className="mx-auto h-12 w-12 text-gray-400" />
             <h3 className="mt-2 text-sm font-medium text-gray-900">暂无生成记录</h3>
@@ -308,7 +349,7 @@ export default function ResultsList({ taskHistory }: ResultsListProps = {}) {
             <div className="mt-3">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-medium text-gray-900">
-                  闪卡预览 - {selectedTask.title}
+                  闪卡预览 - {getTaskTitle(selectedTask)}
                 </h3>
                 <button
                   onClick={() => setSelectedTask(null)}
@@ -319,14 +360,14 @@ export default function ResultsList({ taskHistory }: ResultsListProps = {}) {
                   </svg>
                 </button>
               </div>
-              
+
               {/* 这里将来会显示实际的闪卡预览内容 */}
               <div className="bg-gray-50 rounded-lg p-6 mb-4">
                 <p className="text-gray-600 text-center">
                   闪卡预览功能开发中...
                 </p>
               </div>
-              
+
               <div className="flex justify-end space-x-3">
                 <button
                   onClick={() => setSelectedTask(null)}

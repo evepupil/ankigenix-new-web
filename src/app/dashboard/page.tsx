@@ -53,23 +53,47 @@ function DashboardPage() {
   
   // 任务历史记录
   const [taskHistory, setTaskHistory] = useState<any[]>([]);
+  const [isLoadingTasks, setIsLoadingTasks] = useState(true); // 首次加载时为true
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
 
-  // 从 localStorage 加载任务历史
+  // 从API获取任务历史，每5秒轮询一次
   useEffect(() => {
-    const savedHistory = localStorage.getItem('ankiTaskHistory');
-    if (savedHistory) {
+    const fetchTasks = async () => {
       try {
-        setTaskHistory(JSON.parse(savedHistory));
-      } catch (e) {
-        console.error('加载任务历史失败:', e);
-      }
-    }
-  }, []);
+        // 只在首次加载时显示加载状态
+        if (isFirstLoad) {
+          setIsLoadingTasks(true);
+        }
 
-  // 保存任务历史到 localStorage
-  useEffect(() => {
-    localStorage.setItem('ankiTaskHistory', JSON.stringify(taskHistory));
-  }, [taskHistory]);
+        const token = localStorage.getItem('auth_token');
+        const response = await fetch('/api/tasks?limit=20', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        const data = await response.json();
+
+        if (data.success && data.tasks) {
+          setTaskHistory(data.tasks);
+        }
+      } catch (error) {
+        console.error('获取任务列表失败:', error);
+      } finally {
+        if (isFirstLoad) {
+          setIsLoadingTasks(false);
+          setIsFirstLoad(false);
+        }
+      }
+    };
+
+    // 立即获取一次
+    fetchTasks();
+
+    // 每5秒轮询一次
+    const interval = setInterval(fetchTasks, 5000);
+
+    return () => clearInterval(interval);
+  }, [isFirstLoad]);
 
   // 文件输入引用
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -131,6 +155,37 @@ function DashboardPage() {
     }
 
     setIsProcessing(true);
+
+    // 创建任务记录
+    let taskId: string | null = null;
+    try {
+      const token = localStorage.getItem('auth_token');
+      const taskResponse = await fetch('/api/tasks/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          task_type: activeTab,
+          workflow_type: activeTab === 'file' ? 'extract_catalog' : 'direct_generate',
+          input_data: {
+            text: activeTab === 'text' ? textInput : undefined,
+            file: activeTab === 'file' ? { name: selectedFile?.name, type: selectedFile?.type } : undefined,
+            web_url: activeTab === 'url' ? urlInput : undefined,
+            topic: activeTab === 'topic' ? topicInput : undefined,
+          },
+        }),
+      });
+
+      const taskData = await taskResponse.json();
+      if (taskData.success && taskData.task) {
+        taskId = taskData.task.id;
+      }
+    } catch (error) {
+      console.error('创建任务记录失败:', error);
+      // 即使任务记录创建失败，也继续执行生成流程
+    }
 
     try {
       let result;
@@ -215,21 +270,6 @@ function DashboardPage() {
 
         // 保存到 localStorage
         localStorage.setItem('currentFlashcardSet', JSON.stringify(flashcardSet));
-
-        // 添加到任务历史
-        const newTask = {
-          id: Date.now().toString(),
-          title: inputTitle,
-          inputType: activeTab,
-          status: 'completed' as const,
-          createdAt: new Date().toLocaleString('zh-CN'),
-          completedAt: new Date().toLocaleString('zh-CN'),
-          cardCount: cardsWithIds.length,
-          qualityScore: flashcardSet.averageQuality,
-          flashcardSetId: flashcardSet.id, // 保存闪卡集ID用于后续访问
-        };
-
-        setTaskHistory(prev => [newTask, ...prev]);
 
         // 显示成功提示
         showToast('success', '生成成功', `成功生成 ${cardsWithIds.length} 张闪卡，正在跳转到预览页面...`);
@@ -582,7 +622,7 @@ function DashboardPage() {
 
         {/* 生成结果列表 */}
         <div className="mt-8">
-          <ResultsList taskHistory={taskHistory} />
+          <ResultsList taskHistory={taskHistory} isLoading={isLoadingTasks} />
         </div>
       </div>
 
