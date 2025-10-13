@@ -272,20 +272,29 @@ class ApiService {
     }>;
   }> {
     try {
-      // 收集所有章节标题
+      // 收集所有需要生成的section标题
+      // 注意：只收集section，不收集chapter（避免重复）
       const sectionTitles: string[] = [];
 
       chapters.forEach(chapter => {
-        // 添加章节标题
-        sectionTitles.push(chapter.chapter);
-
-        // 添加section标题（如果有）
+        // 如果章节有子章节（sections），则只生成子章节
         if (chapter.sections && chapter.sections.length > 0) {
           chapter.sections.forEach(section => {
+            // 生成完整的章节路径作为标题
             sectionTitles.push(`${chapter.chapter} - ${section.section}`);
           });
+        } else {
+          // 如果章节没有子章节，才生成章节本身
+          sectionTitles.push(chapter.chapter);
         }
       });
+
+      if (sectionTitles.length === 0) {
+        return {
+          success: false,
+          error: '没有可生成的章节',
+        };
+      }
 
       // 为每个章节生成闪卡
       const allCards: Flashcard[] = [];
