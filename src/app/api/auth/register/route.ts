@@ -61,14 +61,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 注册成功
+    // 注册成功，返回session信息以便自动登录
     return NextResponse.json(
       {
         success: true,
-        message: 'Registration successful. Please check your email for verification.',
+        message: 'Registration successful',
         user: {
           id: data.user?.id,
           email: data.user?.email,
+          username: data.user?.user_metadata?.username,
+        },
+        session: {
+          access_token: data.session?.access_token,
+          refresh_token: data.session?.refresh_token,
+          expires_at: data.session?.expires_at,
         },
       },
       { status: 201 }

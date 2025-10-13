@@ -138,9 +138,9 @@ export default function Register() {
 
       if (!res.ok || data.error) {
         setErrors({ general: data.error || '注册失败，请稍后重试' });
-      } else if (data.token && data.user) {
+      } else if (data.session?.access_token && data.user) {
         // 注册成功，自动登录
-        login(data.token, data.user);
+        login(data.session.access_token, data.user);
 
         // 跳转到dashboard
         router.push('/dashboard');

@@ -94,9 +94,9 @@ export default function Login() {
 
       if (!res.ok || data.error) {
         setErrors({ general: data.error || '登录失败，请检查邮箱和密码' });
-      } else if (data.token && data.user) {
+      } else if (data.session?.access_token && data.user) {
         // 登录成功，保存token和用户信息
-        login(data.token, data.user);
+        login(data.session.access_token, data.user);
 
         // 跳转到dashboard
         router.push('/dashboard');
