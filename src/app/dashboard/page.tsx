@@ -6,6 +6,7 @@ import { CreditCardIcon, ClockIcon, CheckCircleIcon, XCircleIcon } from '@heroic
 import ResultsList from '@/components/ResultsList';
 import ToastContainer, { ToastMessage } from '@/components/Toast';
 import CatalogSelectionModal from '@/components/CatalogSelectionModal';
+import ProtectedRoute from '@/components/ProtectedRoute';
 import { apiService, Chapter } from '@/services/api';
 import { Flashcard, FlashcardSet } from '@/types/flashcard';
 
@@ -13,7 +14,7 @@ import { Flashcard, FlashcardSet } from '@/types/flashcard';
  * Dashboard页面组件
  * 提供用户的主要工作界面，包含积分信息、任务状态和核心操作区域
  */
-export default function Dashboard() {
+function DashboardPage() {
   const router = useRouter();
 
   // 模拟用户数据
@@ -597,5 +598,13 @@ export default function Dashboard() {
         onConfirm={handleCatalogConfirm}
       />
     </div>
+  );
+}
+
+export default function Dashboard() {
+  return (
+    <ProtectedRoute>
+      <DashboardPage />
+    </ProtectedRoute>
   );
 }

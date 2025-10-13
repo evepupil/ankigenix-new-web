@@ -12,13 +12,14 @@ import {
   ChevronDownIcon,
   ChevronRightIcon,
 } from '@heroicons/react/24/outline';
+import ProtectedRoute from '@/components/ProtectedRoute';
 import { Flashcard, Chapter, FlashcardSet } from '@/types/flashcard';
 
 /**
  * 闪卡预览页面
  * 支持章节目录、卡片翻转预览、批量选择、编辑和导出功能
  */
-export default function PreviewPage() {
+function PreviewPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -827,7 +828,7 @@ export default function PreviewPage() {
                   onClick={handleSaveEdit}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
-                  保存修改
+                                保存修改
                 </button>
               </div>
             </div>
@@ -835,5 +836,13 @@ export default function PreviewPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function PreviewPage() {
+  return (
+    <ProtectedRoute>
+      <PreviewPageContent />
+    </ProtectedRoute>
   );
 }

@@ -4,6 +4,50 @@ import { Flashcard } from '@/types/flashcard';
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 /**
+ * 获取存储的token
+ */
+const getToken = (): string | null => {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('auth_token');
+  }
+  return null;
+};
+
+/**
+ * 获取带有认证头的headers
+ */
+const getAuthHeaders = (includeContentType: boolean = true): HeadersInit => {
+  const headers: HeadersInit = {};
+
+  if (includeContentType) {
+    headers['Content-Type'] = 'application/json';
+  }
+
+  const token = getToken();
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  return headers;
+};
+
+/**
+ * 处理API响应，检查401错误
+ */
+const handleResponse = async (response: Response) => {
+  if (response.status === 401) {
+    // Token过期或无效，清除本地存储并跳转到登录页
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_info');
+      window.location.href = '/login';
+    }
+    throw new Error('认证已过期，请重新登录');
+  }
+  return response;
+};
+
+/**
  * 章节数据结构
  */
 interface Subsection {
@@ -34,12 +78,11 @@ class ApiService {
     try {
       const response = await fetch(`${API_BASE_URL}/flashcards/generate/text/`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify({ text }),
       });
 
+      await handleResponse(response);
       const result = await response.json();
 
       if (!response.ok) {
@@ -57,7 +100,7 @@ class ApiService {
       console.error('API调用错误:', error);
       return {
         success: false,
-        error: '网络错误或服务器不可用',
+        error: error instanceof Error ? error.message : '网络错误或服务器不可用',
       };
     }
   }
@@ -70,11 +113,19 @@ class ApiService {
       const formData = new FormData();
       formData.append('file', file);
 
+      const token = getToken();
+      const headers: HeadersInit = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${API_BASE_URL}/flashcards/generate/file/`, {
         method: 'POST',
+        headers: headers,
         body: formData,
       });
 
+      await handleResponse(response);
       const result = await response.json();
 
       if (!response.ok) {
@@ -92,7 +143,7 @@ class ApiService {
       console.error('API调用错误:', error);
       return {
         success: false,
-        error: '网络错误或服务器不可用',
+        error: error instanceof Error ? error.message : '网络错误或服务器不可用',
       };
     }
   }
@@ -111,9 +162,7 @@ class ApiService {
     try {
       const response = await fetch(`${API_BASE_URL}/flashcards/generate/url/`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify({
           url,
           card_number: cardNumber,
@@ -121,6 +170,7 @@ class ApiService {
         }),
       });
 
+      await handleResponse(response);
       const result = await response.json();
 
       if (!response.ok) {
@@ -140,7 +190,7 @@ class ApiService {
       console.error('API调用错误:', error);
       return {
         success: false,
-        error: '网络错误或服务器不可用',
+        error: error instanceof Error ? error.message : '网络错误或服务器不可用',
       };
     }
   }
@@ -159,11 +209,19 @@ class ApiService {
       formData.append('file', file);
       formData.append('lang', lang);
 
+      const token = getToken();
+      const headers: HeadersInit = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${API_BASE_URL}/catalog/file/`, {
         method: 'POST',
+        headers: headers,
         body: formData,
       });
 
+      await handleResponse(response);
       const result = await response.json();
 
       console.log('generateCatalogFromFile API raw response:', result);
@@ -186,7 +244,7 @@ class ApiService {
       console.error('API调用错误:', error);
       return {
         success: false,
-        error: '网络错误或服务器不可用',
+        error: error instanceof Error ? error.message : '网络错误或服务器不可用',
       };
     }
   }

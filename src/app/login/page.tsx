@@ -1,24 +1,36 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import { useAuth } from '@/contexts/AuthContext';
 
 /**
  * 登录页面组件
  * 提供用户登录功能，包含邮箱密码登录和第三方登录选项
  */
 export default function Login() {
+  const router = useRouter();
+  const { login, isAuthenticated } = useAuth();
+
   // 表单状态
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
-  
+
   // 界面状态
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
+
+  // 如果已登录，跳转到dashboard
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/dashboard');
+    }
+  }, [isAuthenticated, router]);
 
   /**
    * 处理输入框变化
@@ -66,21 +78,33 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
+
     setIsLoading(true);
     setErrors({});
+
     try {
+      // TODO: 替换为真实的后端登录API
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: formData.email, password: formData.password })
       });
+
       const data = await res.json();
+
       if (!res.ok || data.error) {
         setErrors({ general: data.error || '登录失败，请检查邮箱和密码' });
+      } else if (data.token && data.user) {
+        // 登录成功，保存token和用户信息
+        login(data.token, data.user);
+
+        // 跳转到dashboard
+        router.push('/dashboard');
       } else {
-        alert('登录成功');
+        setErrors({ general: '登录响应格式错误' });
       }
     } catch (error) {
+      console.error('登录错误:', error);
       setErrors({ general: '网络错误，请稍后重试' });
     } finally {
       setIsLoading(false);

@@ -1,14 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { EyeIcon, EyeSlashIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { useAuth } from '@/contexts/AuthContext';
 
 /**
  * 注册页面组件
  * 提供用户注册功能，包含邮箱密码注册和第三方注册选项
  */
 export default function Register() {
+  const router = useRouter();
+  const { login, isAuthenticated } = useAuth();
+
   // 表单状态
   const [formData, setFormData] = useState({
     name: '',
@@ -16,13 +21,20 @@ export default function Register() {
     password: '',
     confirmPassword: ''
   });
-  
+
   // 界面状态
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+
+  // 如果已登录，跳转到dashboard
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/dashboard');
+    }
+  }, [isAuthenticated, router]);
 
   /**
    * 处理输入框变化
@@ -106,9 +118,12 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
+
     setIsLoading(true);
     setErrors({});
+
     try {
+      // TODO: 替换为真实的后端注册API
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -118,13 +133,22 @@ export default function Register() {
           username: formData.name || undefined
         })
       });
+
       const data = await res.json();
+
       if (!res.ok || data.error) {
         setErrors({ general: data.error || '注册失败，请稍后重试' });
+      } else if (data.token && data.user) {
+        // 注册成功，自动登录
+        login(data.token, data.user);
+
+        // 跳转到dashboard
+        router.push('/dashboard');
       } else {
-        alert('注册成功');
+        setErrors({ general: '注册响应格式错误' });
       }
     } catch (error) {
+      console.error('注册错误:', error);
       setErrors({ general: '网络错误，请稍后重试' });
     } finally {
       setIsLoading(false);

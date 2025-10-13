@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 
 /**
  * 公共头部导航栏组件
@@ -10,9 +11,9 @@ import { usePathname } from 'next/navigation';
  */
 export default function Header() {
   const pathname = usePathname();
+  const { user, isAuthenticated, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [language, setLanguage] = useState('zh');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   /**
    * 切换移动端菜单显示状态
@@ -29,10 +30,11 @@ export default function Header() {
   };
 
   /**
-   * 模拟登录/登出操作
+   * 处理登出
    */
-  const handleAuth = () => {
-    setIsLoggedIn(!isLoggedIn);
+  const handleLogout = () => {
+    logout();
+    setIsMenuOpen(false);
   };
 
   /**
@@ -40,6 +42,11 @@ export default function Header() {
    */
   const isActive = (path: string) => {
     return pathname === path;
+  };
+
+  // 获取用户名首字母
+  const getUserInitial = () => {
+    return user?.username?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U';
   };
 
   return (
@@ -88,12 +95,12 @@ export default function Header() {
             >
               定价
             </Link>
-            {isLoggedIn && (
+            {isAuthenticated && (
               <Link
                 href="/dashboard"
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  isActive('/dashboard') 
-                    ? 'text-blue-600 bg-blue-50' 
+                  isActive('/dashboard')
+                    ? 'text-blue-600 bg-blue-50'
                     : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
                 }`}
               >
@@ -113,16 +120,16 @@ export default function Header() {
             </button>
 
             {/* 登录状态 */}
-            {isLoggedIn ? (
+            {isAuthenticated ? (
               <div className="flex items-center space-x-3">
                 <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                    <span className="text-sm font-medium text-gray-700">U</span>
+                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                    <span className="text-sm font-medium text-white">{getUserInitial()}</span>
                   </div>
-                  <span className="text-sm text-gray-700">用户</span>
+                  <span className="text-sm text-gray-700">{user?.username || user?.email}</span>
                 </div>
                 <button
-                  onClick={handleAuth}
+                  onClick={handleLogout}
                   className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
                 >
                   退出
@@ -215,12 +222,12 @@ export default function Header() {
               >
                 定价
               </Link>
-              {isLoggedIn && (
+              {isAuthenticated && (
                 <Link
                   href="/dashboard"
                   className={`px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                    isActive('/dashboard') 
-                      ? 'text-blue-600 bg-blue-50' 
+                    isActive('/dashboard')
+                      ? 'text-blue-600 bg-blue-50'
                       : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
                   }`}
                   onClick={() => setIsMenuOpen(false)}
@@ -238,17 +245,17 @@ export default function Header() {
                   >
                     {language === 'zh' ? '中文' : 'EN'}
                   </button>
-                  
-                  {isLoggedIn ? (
+
+                  {isAuthenticated ? (
                     <div className="flex items-center space-x-3">
                       <div className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                          <span className="text-sm font-medium text-gray-700">U</span>
+                        <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                          <span className="text-sm font-medium text-white">{getUserInitial()}</span>
                         </div>
-                        <span className="text-sm text-gray-700">用户</span>
+                        <span className="text-sm text-gray-700">{user?.username || user?.email}</span>
                       </div>
                       <button
-                        onClick={handleAuth}
+                        onClick={handleLogout}
                         className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
                       >
                         退出
