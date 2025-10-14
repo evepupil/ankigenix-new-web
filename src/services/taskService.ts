@@ -1,29 +1,27 @@
-import { supabase, getCurrentUser } from '@/lib/supabase/client';
+import { supabaseServer } from '@/lib/supabase/server';
 import type { TaskInfo, TaskInfoInsert, TaskInfoUpdate, TaskStatus } from '@/types/database';
 
 /**
- * 任务服务类
+ * 任务服务类（服务端业务层）
  * 提供 task_info 表的 CRUD 操作
+ *
+ * 注意：所有方法都需要传入 userId 进行权限控制
  */
 class TaskService {
   private tableName = 'task_info';
 
   /**
    * 创建新任务
-   * @param taskData 任务数据（不含 user_id，自动从当前用户获取）
+   * @param userId 用户ID
+   * @param taskData 任务数据（不含 user_id）
    * @returns 创建的任务信息
    */
-  async createTask(taskData: Omit<TaskInfoInsert, 'user_id'>): Promise<TaskInfo> {
-    const user = await getCurrentUser();
-    if (!user) {
-      throw new Error('User not authenticated');
-    }
-
-    const { data, error } = await supabase
+  async createTask(userId: string, taskData: Omit<TaskInfoInsert, 'user_id'>): Promise<TaskInfo> {
+    const { data, error } = await supabaseServer
       .from(this.tableName)
       .insert({
         ...taskData,
-        user_id: user.id,
+        user_id: userId,
       })
       .select()
       .single();
@@ -35,13 +33,15 @@ class TaskService {
   /**
    * 获取单个任务
    * @param taskId 任务ID
+   * @param userId 用户ID（用于权限验证）
    * @returns 任务信息
    */
-  async getTask(taskId: string): Promise<TaskInfo | null> {
-    const { data, error } = await supabase
+  async getTask(taskId: string, userId: string): Promise<TaskInfo | null> {
+    const { data, error } = await supabaseServer
       .from(this.tableName)
       .select('*')
       .eq('id', taskId)
+      .eq('user_id', userId) // 确保只能查询自己的任务
       .single();
 
     if (error) {
@@ -52,26 +52,22 @@ class TaskService {
   }
 
   /**
-   * 获取当前用户的所有任务
+   * 获取用户的所有任务
+   * @param userId 用户ID
    * @param options 查询选项
    * @returns 任务列表
    */
-  async getUserTasks(options?: {
+  async getUserTasks(userId: string, options?: {
     status?: TaskStatus;
     limit?: number;
     offset?: number;
     orderBy?: 'created_at' | 'updated_at';
     ascending?: boolean;
   }): Promise<TaskInfo[]> {
-    const user = await getCurrentUser();
-    if (!user) {
-      throw new Error('User not authenticated');
-    }
-
-    let query = supabase
+    let query = supabaseServer
       .from(this.tableName)
       .select('*')
-      .eq('user_id', user.id);
+      .eq('user_id', userId);
 
     // 按状态筛选
     if (options?.status) {
@@ -100,14 +96,16 @@ class TaskService {
   /**
    * 更新任务状态
    * @param taskId 任务ID
+   * @param userId 用户ID（用于权限验证）
    * @param status 新状态
    * @returns 更新后的任务信息
    */
-  async updateTaskStatus(taskId: string, status: TaskStatus): Promise<TaskInfo> {
-    const { data, error } = await supabase
+  async updateTaskStatus(taskId: string, userId: string, status: TaskStatus): Promise<TaskInfo> {
+    const { data, error } = await supabaseServer
       .from(this.tableName)
       .update({ status })
       .eq('id', taskId)
+      .eq('user_id', userId) // 确保只能更新自己的任务
       .select()
       .single();
 
@@ -118,14 +116,16 @@ class TaskService {
   /**
    * 更新任务信息
    * @param taskId 任务ID
+   * @param userId 用户ID（用于权限验证）
    * @param updates 更新的字段
    * @returns 更新后的任务信息
    */
-  async updateTask(taskId: string, updates: TaskInfoUpdate): Promise<TaskInfo> {
-    const { data, error } = await supabase
+  async updateTask(taskId: string, userId: string, updates: TaskInfoUpdate): Promise<TaskInfo> {
+    const { data, error } = await supabaseServer
       .from(this.tableName)
       .update(updates)
       .eq('id', taskId)
+      .eq('user_id', userId) // 确保只能更新自己的任务
       .select()
       .single();
 
@@ -136,52 +136,50 @@ class TaskService {
   /**
    * 删除任务
    * @param taskId 任务ID
+   * @param userId 用户ID（用于权限验证）
    */
-  async deleteTask(taskId: string): Promise<void> {
-    const { error } = await supabase
+  async deleteTask(taskId: string, userId: string): Promise<void> {
+    const { error } = await supabaseServer
       .from(this.tableName)
       .delete()
-      .eq('id', taskId);
+      .eq('id', taskId)
+      .eq('user_id', userId); // 确保只能删除自己的任务
 
     if (error) throw error;
   }
 
   /**
    * 获取任务统计信息
+   * @param userId 用户ID
    * @returns 统计数据
    */
-  async getTaskStats(): Promise<{
+  async getTaskStats(userId: string): Promise<{
     total: number;
     completed: number;
     failed: number;
     processing: number;
   }> {
-    const user = await getCurrentUser();
-    if (!user) {
-      throw new Error('User not authenticated');
-    }
-
-    const { count: total } = await supabase
+    const { count: total } = await supabaseServer
       .from(this.tableName)
       .select('*', { count: 'exact', head: true })
-      .eq('user_id', user.id);
+      .eq('user_id', userId);
 
-    const { count: completed } = await supabase
+    const { count: completed } = await supabaseServer
       .from(this.tableName)
       .select('*', { count: 'exact', head: true })
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .eq('status', 'completed');
 
-    const { count: failed } = await supabase
+    const { count: failed } = await supabaseServer
       .from(this.tableName)
       .select('*', { count: 'exact', head: true })
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .eq('status', 'failed');
 
-    const { count: processing } = await supabase
+    const { count: processing } = await supabaseServer
       .from(this.tableName)
       .select('*', { count: 'exact', head: true })
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .in('status', ['processing', 'ai_processing', 'file_uploading', 'generating_catalog', 'generating_cards']);
 
     return {
@@ -189,34 +187,6 @@ class TaskService {
       completed: completed || 0,
       failed: failed || 0,
       processing: processing || 0,
-    };
-  }
-
-  /**
-   * 订阅任务变化（实时更新）
-   * @param taskId 任务ID
-   * @param callback 任务更新时的回调函数
-   * @returns 取消订阅的函数
-   */
-  subscribeToTask(taskId: string, callback: (task: TaskInfo) => void) {
-    const subscription = supabase
-      .channel(`task:${taskId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: this.tableName,
-          filter: `id=eq.${taskId}`,
-        },
-        (payload) => {
-          callback(payload.new as TaskInfo);
-        }
-      )
-      .subscribe();
-
-    return () => {
-      subscription.unsubscribe();
     };
   }
 }

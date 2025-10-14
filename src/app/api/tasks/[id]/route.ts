@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabase/server';
+import { authenticateRequest } from '@/lib/supabase/jwt-verify';
 
 /**
  * GET /api/tasks/[id]
@@ -10,12 +11,13 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // 获取当前用户
-    const { data: { user }, error: authError } = await supabaseServer.auth.getUser();
-
-    if (authError || !user) {
+    // 验证 JWT 并获取用户 ID
+    let userId: string;
+    try {
+      userId = await authenticateRequest(request);
+    } catch (error) {
       return NextResponse.json(
-        { error: 'Unauthorized. Please login first.' },
+        { error: error instanceof Error ? error.message : 'Unauthorized. Please login first.' },
         { status: 401 }
       );
     }
@@ -28,7 +30,7 @@ export async function GET(
       .from('task_info')
       .select('*')
       .eq('id', taskId)
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .single();
 
     if (error) {
@@ -76,12 +78,13 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // 获取当前用户
-    const { data: { user }, error: authError } = await supabaseServer.auth.getUser();
-
-    if (authError || !user) {
+    // 验证 JWT 并获取用户 ID
+    let userId: string;
+    try {
+      userId = await authenticateRequest(request);
+    } catch (error) {
       return NextResponse.json(
-        { error: 'Unauthorized. Please login first.' },
+        { error: error instanceof Error ? error.message : 'Unauthorized. Please login first.' },
         { status: 401 }
       );
     }
@@ -130,7 +133,7 @@ export async function PATCH(
       .from('task_info')
       .update(updateData)
       .eq('id', taskId)
-      .eq('user_id', user.id) // 额外确保安全
+      .eq('user_id', userId) // 额外确保安全
       .select()
       .single();
 

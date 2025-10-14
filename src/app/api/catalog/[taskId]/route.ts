@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabase/server';
+import { authenticateRequest } from '@/lib/supabase/jwt-verify';
 
 /**
  * GET /api/catalog/[taskId]
@@ -24,12 +25,13 @@ export async function GET(
   { params }: { params: Promise<{ taskId: string }> }
 ) {
   try {
-    // 获取当前用户
-    const { data: { user }, error: authError } = await supabaseServer.auth.getUser();
-
-    if (authError || !user) {
+    // 验证 JWT 并获取用户 ID
+    let userId: string;
+    try {
+      userId = await authenticateRequest(request);
+    } catch (error) {
       return NextResponse.json(
-        { success: false, error: 'Unauthorized. Please login first.' },
+        { success: false, error: error instanceof Error ? error.message : 'Unauthorized. Please login first.' },
         { status: 401 }
       );
     }
@@ -42,7 +44,7 @@ export async function GET(
       .from('catalog_info')
       .select('*')
       .eq('task_id', taskId)
-      .eq('user_id', user.id) // 额外确保安全
+      .eq('user_id', userId) // 额外确保安全
       .single();
 
     if (error) {

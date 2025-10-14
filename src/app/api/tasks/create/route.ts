@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabase/server';
+import { authenticateRequest } from '@/lib/supabase/jwt-verify';
 
 /**
  * POST /api/tasks/create
@@ -21,12 +22,13 @@ import { supabaseServer } from '@/lib/supabase/server';
  */
 export async function POST(request: NextRequest) {
   try {
-    // 获取当前用户
-    const { data: { user }, error: authError } = await supabaseServer.auth.getUser();
-
-    if (authError || !user) {
+    // 验证 JWT 并获取用户 ID
+    let userId: string;
+    try {
+      userId = await authenticateRequest(request);
+    } catch (error) {
       return NextResponse.json(
-        { error: 'Unauthorized. Please login first.' },
+        { error: error instanceof Error ? error.message : 'Unauthorized. Please login first.' },
         { status: 401 }
       );
     }
@@ -64,7 +66,7 @@ export async function POST(request: NextRequest) {
     const { data: task, error } = await supabaseServer
       .from('task_info')
       .insert({
-        user_id: user.id,
+        user_id: userId,
         task_type,
         workflow_type,
         input_data,
