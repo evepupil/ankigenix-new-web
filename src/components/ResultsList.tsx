@@ -138,6 +138,7 @@ const getInputTypeInfo = (inputType: InputType) => {
 interface ResultsListProps {
   taskHistory?: Task[];
   isLoading?: boolean;
+  onSelectCatalog?: (taskId: string) => void; // 添加选择大纲的回调
 }
 
 /**
@@ -311,9 +312,13 @@ export default function ResultsList({ taskHistory = [], isLoading = false }: Res
                       </div>
                     )}
                     {task.status === 'catalog_ready' && (
-                      <div className="text-sm text-yellow-600 font-medium">
-                        等待选择章节...
-                      </div>
+                      <button
+                        onClick={() => onSelectCatalog?.(task.id)}
+                        className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
+                      >
+                        <DocumentTextIcon className="h-4 w-4 mr-1" />
+                        选择章节
+                      </button>
                     )}
                     {task.status === 'failed' && (
                       <button
