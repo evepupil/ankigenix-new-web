@@ -306,16 +306,16 @@ class ApiService {
   }
 
   /**
-   * 根据文件和选中的章节生成闪卡
+   * 根据文件和选中的章节ID列表生成闪卡
    * @param file 上传的文件
-   * @param chapters 选中的章节列表
+   * @param chapterIds 选中的章节ID列表
    * @param taskId 任务ID（可选）
    * @param cardNumber 每个章节的卡片数量，可选
    * @param lang 语言，默认zh
    */
   async generateFlashcardsFromFileSection(
     file: File,
-    chapters: Chapter[],
+    chapterIds: string[],
     taskId?: string,
     cardNumber?: number,
     lang: string = 'zh'
@@ -330,93 +330,47 @@ class ApiService {
     }>;
   }> {
     try {
-      // 收集所有需要生成的section标题
-      // 注意：只收集section，不收集chapter（避免重复）
-      const sectionTitles: string[] = [];
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      // 添加章节ID列表
+      formData.append('chapter_ids', JSON.stringify(chapterIds));
 
-      chapters.forEach(chapter => {
-        // 如果章节有子章节（sections），则只生成子章节
-        if (chapter.sections && chapter.sections.length > 0) {
-          chapter.sections.forEach(section => {
-            // 生成完整的章节路径作为标题
-            sectionTitles.push(`${chapter.chapter} - ${section.section}`);
-          });
-        } else {
-          // 如果章节没有子章节，才生成章节本身
-          sectionTitles.push(chapter.chapter);
-        }
+      // 添加可选参数
+      if (taskId) {
+        formData.append('task_id', taskId);
+      }
+      if (cardNumber) {
+        formData.append('card_number', cardNumber.toString());
+      }
+      formData.append('lang', lang);
+
+      const token = getToken();
+      const headers: HeadersInit = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/flashcards/generate/file/section/`, {
+        method: 'POST',
+        headers: headers,
+        body: formData,
       });
 
-      if (sectionTitles.length === 0) {
+      await handleResponse(response);
+      const result = await response.json();
+
+      if (!response.ok) {
         return {
           success: false,
-          error: '没有可生成的章节',
-        };
-      }
-
-      // 为每个章节生成闪卡
-      const allCards: Flashcard[] = [];
-      const sectionResults: Array<{
-        sectionTitle: string;
-        cards: Flashcard[];
-        count: number;
-      }> = [];
-
-      for (const sectionTitle of sectionTitles) {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('section_title', sectionTitle);
-
-        // 添加可选参数
-        if (taskId) {
-          formData.append('task_id', taskId);
-        }
-        if (cardNumber) {
-          formData.append('card_number', cardNumber.toString());
-        }
-        formData.append('lang', lang);
-
-        const token = getToken();
-        const headers: HeadersInit = {};
-        if (token) {
-          headers['Authorization'] = `Bearer ${token}`;
-        }
-
-        const response = await fetch(`${API_BASE_URL}/flashcards/generate/file/section/`, {
-          method: 'POST',
-          headers: headers,
-          body: formData,
-        });
-
-        await handleResponse(response);
-        const result = await response.json();
-
-        if (!response.ok) {
-          console.error(`生成章节"${sectionTitle}"闪卡失败:`, result.error);
-          continue; // 跳过失败的章节，继续处理其他章节
-        }
-
-        if (result.cards && result.cards.length > 0) {
-          allCards.push(...result.cards);
-          sectionResults.push({
-            sectionTitle: result.section_title || sectionTitle,
-            cards: result.cards,
-            count: result.count || result.cards.length,
-          });
-        }
-      }
-
-      if (allCards.length === 0) {
-        return {
-          success: false,
-          error: '所有章节的闪卡生成都失败了',
+          error: result.error || '生成闪卡失败',
         };
       }
 
       return {
         success: true,
-        cards: allCards,
-        sectionResults: sectionResults,
+        cards: result.cards,
+        sectionResults: result.section_results,
       };
     } catch (error) {
       console.error('API调用错误:', error);

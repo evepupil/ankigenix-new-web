@@ -7,17 +7,20 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
  * 章节数据结构
  */
 interface Subsection {
+  id?: string;
   subsection: string;
   description?: string;
 }
 
 interface Section {
+  id?: string;
   section: string;
   description?: string;
   subsections?: Subsection[];
 }
 
 interface Chapter {
+  id?: string;
   chapter: string;
   description?: string;
   sections?: Section[];
@@ -31,7 +34,7 @@ interface CatalogSelectionModalProps {
   catalog: Chapter[];
   fileName: string;
   onClose: () => void;
-  onConfirm: (selectedChapters: Chapter[]) => void;
+  onConfirm: (selectedIds: string[]) => void; // 修改为返回ID列表
 }
 
 /**
@@ -45,150 +48,207 @@ export default function CatalogSelectionModal({
   onClose,
   onConfirm,
 }: CatalogSelectionModalProps) {
-  // 选中的章节索引集合
-  const [selectedChapters, setSelectedChapters] = useState<Set<number>>(new Set());
-  // 选中的小节路径集合 (格式: "chapterIndex-sectionIndex")
-  const [selectedSections, setSelectedSections] = useState<Set<string>>(new Set());
-  // 展开的章节索引集合
-  const [expandedChapters, setExpandedChapters] = useState<Set<number>>(new Set());
+  // 选中的ID集合（章节、小节、子小节的ID）
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  // 展开的章节ID集合
+  const [expandedChapters, setExpandedChapters] = useState<Set<string>>(new Set());
 
   // 初始化：默认全选并全部展开
   useEffect(() => {
     if (isOpen && catalog.length > 0) {
-      // 全选章节
-      const allChapters = new Set(catalog.map((_, index) => index));
-      setSelectedChapters(allChapters);
+      const allIds = new Set<string>();
+      const allChapterIds = new Set<string>();
 
-      // 全选所有小节
-      const allSections = new Set<string>();
-      catalog.forEach((chapter, chapterIndex) => {
-        chapter.sections?.forEach((_, sectionIndex) => {
-          allSections.add(`${chapterIndex}-${sectionIndex}`);
-        });
+      // 递归收集所有ID
+      catalog.forEach((chapter) => {
+        if (chapter.id) {
+          allIds.add(chapter.id);
+          allChapterIds.add(chapter.id);
+
+          chapter.sections?.forEach((section) => {
+            if (section.id) {
+              allIds.add(section.id);
+            }
+            section.subsections?.forEach((subsection) => {
+              if (subsection.id) {
+                allIds.add(subsection.id);
+              }
+            });
+          });
+        }
       });
-      setSelectedSections(allSections);
 
-      // 全部展开
-      setExpandedChapters(allChapters);
+      setSelectedIds(allIds);
+      setExpandedChapters(allChapterIds);
     }
   }, [isOpen, catalog]);
 
-  // 切换章节选中状态
-  const toggleChapter = (chapterIndex: number) => {
-    const newSelected = new Set(selectedChapters);
-    const chapter = catalog[chapterIndex];
+  // 获取章节下所有的子ID（sections和subsections）
+  const getChapterChildIds = (chapter: Chapter): string[] => {
+    const ids: string[] = [];
+    chapter.sections?.forEach((section) => {
+      if (section.id) ids.push(section.id);
+      section.subsections?.forEach((subsection) => {
+        if (subsection.id) ids.push(subsection.id);
+      });
+    });
+    return ids;
+  };
 
-    if (newSelected.has(chapterIndex)) {
-      // 取消选中章节，同时取消选中所有子节点
-      newSelected.delete(chapterIndex);
-      const newSelectedSections = new Set(selectedSections);
-      chapter.sections?.forEach((_, sectionIndex) => {
-        newSelectedSections.delete(`${chapterIndex}-${sectionIndex}`);
-      });
-      setSelectedSections(newSelectedSections);
+  // 切换章节选中状态
+  const toggleChapter = (chapter: Chapter) => {
+    if (!chapter.id) return;
+
+    const newSelectedIds = new Set(selectedIds);
+    const childIds = getChapterChildIds(chapter);
+
+    if (newSelectedIds.has(chapter.id)) {
+      // 取消选中章节及所有子节点
+      newSelectedIds.delete(chapter.id);
+      childIds.forEach(id => newSelectedIds.delete(id));
     } else {
-      // 选中章节，同时选中所有子节点
-      newSelected.add(chapterIndex);
-      const newSelectedSections = new Set(selectedSections);
-      chapter.sections?.forEach((_, sectionIndex) => {
-        newSelectedSections.add(`${chapterIndex}-${sectionIndex}`);
-      });
-      setSelectedSections(newSelectedSections);
+      // 选中章节及所有子节点
+      newSelectedIds.add(chapter.id);
+      childIds.forEach(id => newSelectedIds.add(id));
     }
 
-    setSelectedChapters(newSelected);
+    setSelectedIds(newSelectedIds);
   };
 
   // 切换小节选中状态
-  const toggleSection = (chapterIndex: number, sectionIndex: number) => {
-    const sectionKey = `${chapterIndex}-${sectionIndex}`;
-    const newSelectedSections = new Set(selectedSections);
+  const toggleSection = (chapter: Chapter, section: Section) => {
+    if (!chapter.id || !section.id) return;
 
-    if (newSelectedSections.has(sectionKey)) {
-      newSelectedSections.delete(sectionKey);
+    const newSelectedIds = new Set(selectedIds);
+
+    // 获取小节的所有子ID
+    const subsectionIds: string[] = [];
+    section.subsections?.forEach((subsection) => {
+      if (subsection.id) subsectionIds.push(subsection.id);
+    });
+
+    if (newSelectedIds.has(section.id)) {
+      // 取消选中小节及所有子小节
+      newSelectedIds.delete(section.id);
+      subsectionIds.forEach(id => newSelectedIds.delete(id));
     } else {
-      newSelectedSections.add(sectionKey);
+      // 选中小节及所有子小节
+      newSelectedIds.add(section.id);
+      subsectionIds.forEach(id => newSelectedIds.add(id));
     }
 
-    setSelectedSections(newSelectedSections);
+    setSelectedIds(newSelectedIds);
 
-    // 检查父章节是否应该被选中
-    const chapter = catalog[chapterIndex];
-    const allSectionsSelected = chapter.sections?.every((_, idx) =>
-      newSelectedSections.has(`${chapterIndex}-${idx}`)
+    // 检查父章节是否应该被选中（所有sections都选中才选中章节）
+    const allSectionsSelected = chapter.sections?.every((sec) =>
+      sec.id && newSelectedIds.has(sec.id)
     );
 
-    const newSelectedChapters = new Set(selectedChapters);
-    if (allSectionsSelected) {
-      newSelectedChapters.add(chapterIndex);
-    } else {
-      newSelectedChapters.delete(chapterIndex);
+    if (allSectionsSelected && chapter.id) {
+      newSelectedIds.add(chapter.id);
+    } else if (chapter.id) {
+      newSelectedIds.delete(chapter.id);
     }
 
-    setSelectedChapters(newSelectedChapters);
+    setSelectedIds(newSelectedIds);
+  };
+
+  // 切换子小节选中状态
+  const toggleSubsection = (chapter: Chapter, section: Section, subsection: Subsection) => {
+    if (!subsection.id) return;
+
+    const newSelectedIds = new Set(selectedIds);
+
+    if (newSelectedIds.has(subsection.id)) {
+      newSelectedIds.delete(subsection.id);
+    } else {
+      newSelectedIds.add(subsection.id);
+    }
+
+    setSelectedIds(newSelectedIds);
+
+    // 检查父小节是否应该被选中
+    if (section.id && section.subsections) {
+      const allSubsectionsSelected = section.subsections.every((sub) =>
+        sub.id && newSelectedIds.has(sub.id)
+      );
+      if (allSubsectionsSelected) {
+        newSelectedIds.add(section.id);
+      } else {
+        newSelectedIds.delete(section.id);
+      }
+    }
+
+    // 检查父章节是否应该被选中
+    if (chapter.id && chapter.sections) {
+      const allSectionsSelected = chapter.sections.every((sec) =>
+        sec.id && newSelectedIds.has(sec.id)
+      );
+      if (allSectionsSelected) {
+        newSelectedIds.add(chapter.id);
+      } else {
+        newSelectedIds.delete(chapter.id);
+      }
+    }
+
+    setSelectedIds(newSelectedIds);
   };
 
   // 切换章节展开/折叠
-  const toggleExpand = (chapterIndex: number) => {
+  const toggleExpand = (chapterId: string) => {
     const newExpanded = new Set(expandedChapters);
-    if (newExpanded.has(chapterIndex)) {
-      newExpanded.delete(chapterIndex);
+    if (newExpanded.has(chapterId)) {
+      newExpanded.delete(chapterId);
     } else {
-      newExpanded.add(chapterIndex);
+      newExpanded.add(chapterId);
     }
     setExpandedChapters(newExpanded);
   };
 
   // 全选/取消全选
   const toggleSelectAll = () => {
-    if (selectedChapters.size === catalog.length) {
-      // 取消全选
-      setSelectedChapters(new Set());
-      setSelectedSections(new Set());
-    } else {
-      // 全选
-      const allChapters = new Set(catalog.map((_, index) => index));
-      setSelectedChapters(allChapters);
-
-      const allSections = new Set<string>();
-      catalog.forEach((chapter, chapterIndex) => {
-        chapter.sections?.forEach((_, sectionIndex) => {
-          allSections.add(`${chapterIndex}-${sectionIndex}`);
+    const allIds = new Set<string>();
+    catalog.forEach((chapter) => {
+      if (chapter.id) allIds.add(chapter.id);
+      chapter.sections?.forEach((section) => {
+        if (section.id) allIds.add(section.id);
+        section.subsections?.forEach((subsection) => {
+          if (subsection.id) allIds.add(subsection.id);
         });
       });
-      setSelectedSections(allSections);
+    });
+
+    if (selectedIds.size === allIds.size) {
+      // 取消全选
+      setSelectedIds(new Set());
+    } else {
+      // 全选
+      setSelectedIds(allIds);
     }
   };
 
   // 确认选择
   const handleConfirm = () => {
-    // 构建选中的章节数据
-    const selected = catalog
-      .map((chapter, chapterIndex) => {
-        if (!selectedChapters.has(chapterIndex)) {
-          // 检查是否有选中的小节
-          const selectedSectionsInChapter = chapter.sections?.filter((_, sectionIndex) =>
-            selectedSections.has(`${chapterIndex}-${sectionIndex}`)
-          );
-
-          if (selectedSectionsInChapter && selectedSectionsInChapter.length > 0) {
-            return {
-              ...chapter,
-              sections: selectedSectionsInChapter,
-            };
-          }
-          return null;
-        }
-        return chapter;
-      })
-      .filter((chapter): chapter is Chapter => chapter !== null);
-
-    onConfirm(selected);
+    // 直接返回选中的ID列表
+    const selectedIdArray = Array.from(selectedIds);
+    onConfirm(selectedIdArray);
   };
 
-  // 计算选中数量
-  const selectedCount = selectedChapters.size;
-  const totalCount = catalog.length;
+  // 计算选中数量（只计算选中的ID数量）
+  const selectedCount = selectedIds.size;
+  const totalCount = (() => {
+    let count = 0;
+    catalog.forEach((chapter) => {
+      if (chapter.id) count++;
+      chapter.sections?.forEach((section) => {
+        if (section.id) count++;
+        section.subsections?.forEach((subsection) => {
+          if (subsection.id) count++;
+        });
+      });
+    });
+    return count;
+  })();
 
   if (!isOpen) return null;
 
@@ -221,7 +281,7 @@ export default function CatalogSelectionModal({
             onClick={toggleSelectAll}
             className="text-sm text-gray-700 hover:text-gray-900 font-medium transition-colors"
           >
-            {selectedChapters.size === catalog.length ? '取消全选' : '全选'}
+            {selectedCount === totalCount ? '取消全选' : '全选'}
           </button>
           <span className="text-sm text-gray-600">
             已选择 <span className="font-semibold text-gray-900">{selectedCount}</span> / {totalCount} 个章节
@@ -230,26 +290,27 @@ export default function CatalogSelectionModal({
 
         {/* 大纲列表 */}
         <div className="flex-1 overflow-y-auto px-6 py-4">
-          {catalog.map((chapter, chapterIndex) => {
-            const isChapterSelected = selectedChapters.has(chapterIndex);
-            const isExpanded = expandedChapters.has(chapterIndex);
+          {catalog.map((chapter) => {
+            const isChapterSelected = chapter.id ? selectedIds.has(chapter.id) : false;
+            const isChapterExpanded = chapter.id ? expandedChapters.has(chapter.id) : false;
             const hasSections = chapter.sections && chapter.sections.length > 0;
+            const chapterKey = chapter.id || `chapter-${catalog.indexOf(chapter)}`;
 
             return (
-              <div key={chapterIndex} className="mb-2">
+              <div key={chapterKey} className="mb-2">
                 {/* 章节 */}
                 <div className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group">
                   <input
                     type="checkbox"
                     checked={isChapterSelected}
-                    onChange={() => toggleChapter(chapterIndex)}
+                    onChange={() => toggleChapter(chapter)}
                     className="mt-1 h-4 w-4 text-gray-900 border-gray-300 rounded focus:ring-gray-900 cursor-pointer"
                   />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <h3 className="text-sm font-medium text-gray-900">
-                          {chapterIndex + 1}. {chapter.chapter}
+                          {chapter.chapter}
                         </h3>
                         {chapter.description && (
                           <p className="text-xs text-gray-500 mt-1 line-clamp-2">{chapter.description}</p>
@@ -257,12 +318,12 @@ export default function CatalogSelectionModal({
                       </div>
                       {hasSections && (
                         <button
-                          onClick={() => toggleExpand(chapterIndex)}
+                          onClick={() => chapter.id && toggleExpand(chapter.id)}
                           className="ml-3 text-gray-400 hover:text-gray-600 transition-colors"
                         >
                           <svg
                             className={`h-5 w-5 transition-transform ${
-                              isExpanded ? 'rotate-180' : ''
+                              isChapterExpanded ? 'rotate-180' : ''
                             }`}
                             fill="none"
                             stroke="currentColor"
@@ -282,26 +343,26 @@ export default function CatalogSelectionModal({
                 </div>
 
                 {/* 小节（展开时显示）*/}
-                {isExpanded && hasSections && (
+                {isChapterExpanded && hasSections && (
                   <div className="ml-10 mt-1 space-y-1">
-                    {chapter.sections!.map((section, sectionIndex) => {
-                      const sectionKey = `${chapterIndex}-${sectionIndex}`;
-                      const isSectionSelected = selectedSections.has(sectionKey);
+                    {chapter.sections!.map((section) => {
+                      const isSectionSelected = section.id ? selectedIds.has(section.id) : false;
+                      const sectionKey = section.id || `section-${chapterKey}-${chapter.sections!.indexOf(section)}`;
 
                       return (
                         <div
-                          key={sectionIndex}
+                          key={sectionKey}
                           className="flex items-start space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
                         >
                           <input
                             type="checkbox"
                             checked={isSectionSelected}
-                            onChange={() => toggleSection(chapterIndex, sectionIndex)}
+                            onChange={() => toggleSection(chapter, section)}
                             className="mt-0.5 h-4 w-4 text-gray-900 border-gray-300 rounded focus:ring-gray-900 cursor-pointer"
                           />
                           <div className="flex-1 min-w-0">
                             <p className="text-sm text-gray-700">
-                              {chapterIndex + 1}.{sectionIndex + 1} {section.section}
+                              {section.section}
                             </p>
                             {section.description && (
                               <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">
@@ -309,6 +370,49 @@ export default function CatalogSelectionModal({
                               </p>
                             )}
                           </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* 子小节（展开时显示）*/}
+                {isChapterExpanded && hasSections && (
+                  <div className="ml-16 mt-1 space-y-1">
+                    {chapter.sections?.map((section) => {
+                      const sectionSubKey = section.id || `${chapterKey}-section-${chapter.sections!.indexOf(section)}`;
+                      
+                      return (
+                        <div key={sectionSubKey}>
+                          {section.subsections && section.subsections.length > 0 && (
+                            section.subsections.map((subsection) => {
+                              const isSubsectionSelected = subsection.id ? selectedIds.has(subsection.id) : false;
+
+                              return (
+                                <div
+                                  key={subsection.id || `subsection-${sectionKey}-${section.subsections!.indexOf(subsection)}`}
+                                  className="flex items-start space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={isSubsectionSelected}
+                                    onChange={() => toggleSubsection(chapter, section, subsection)}
+                                    className="mt-0.5 h-4 w-4 text-gray-900 border-gray-300 rounded focus:ring-gray-900 cursor-pointer"
+                                  />
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm text-gray-700">
+                                      {subsection.subsection}
+                                    </p>
+                                    {subsection.description && (
+                                      <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">
+                                        {subsection.description}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })
+                          )}
                         </div>
                       );
                     })}

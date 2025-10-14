@@ -295,8 +295,9 @@ function DashboardPage() {
 
   /**
    * 处理大纲选择确认
+   * 现在接受章节ID列表，而不是章节对象
    */
-  const handleCatalogConfirm = async (selectedChapters: Chapter[]) => {
+  const handleCatalogConfirm = async (selectedChapterIds: string[]) => {
     setShowCatalogModal(false);
     setIsProcessing(true);
 
@@ -307,18 +308,18 @@ function DashboardPage() {
         return;
       }
 
-      if (selectedChapters.length === 0) {
+      if (selectedChapterIds.length === 0) {
         showToast('warning', '请选择章节', '至少选择一个章节来生成闪卡');
         setIsProcessing(false);
         return;
       }
 
-      showToast('info', '正在生成闪卡', `正在为 ${selectedChapters.length} 个章节生成闪卡，请稍候...`);
+      showToast('info', '正在生成闪卡', `正在为 ${selectedChapterIds.length} 个章节生成闪卡，请稍候...`);
 
       // 调用API生成闪卡，传递taskId给后端
       const result = await apiService.generateFlashcardsFromFileSection(
         selectedFile,
-        selectedChapters,
+        selectedChapterIds, // 现在传递ID列表
         currentTaskId || undefined
       );
 
