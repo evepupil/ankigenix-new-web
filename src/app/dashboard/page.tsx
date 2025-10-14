@@ -708,14 +708,19 @@ function DashboardPage() {
 
         {/* 生成结果列表 */}
         <div className="mt-8">
-          <ResultsList taskHistory={taskHistory} isLoading={isLoadingTasks} />
+          <ResultsList
+            taskHistory={taskHistory}
+            isLoading={isLoadingTasks}
+            onCatalogConfirm={handleCatalogConfirm}
+            onToast={showToast}
+          />
         </div>
       </div>
 
       {/* Toast 通知容器 */}
       <ToastContainer toasts={toasts} onClose={closeToast} />
 
-      {/* 大纲选择对话框 */}
+      {/* 大纲选择对话框 - 用于初始文件上传流程 */}
       <CatalogSelectionModal
         isOpen={showCatalogModal}
         catalog={catalogData}

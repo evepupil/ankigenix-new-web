@@ -1,17 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { 
-  ClockIcon, 
-  CheckCircleIcon, 
-  XCircleIcon, 
-  EyeIcon, 
+import {
+  ClockIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+  EyeIcon,
   ArrowDownTrayIcon,
   DocumentTextIcon,
   LinkIcon,
   VideoCameraIcon,
   LightBulbIcon
 } from '@heroicons/react/24/outline';
+import CatalogSelectionWrapper from './CatalogSelectionWrapper';
 
 // 任务状态类型（对应数据库的status字段）
 type TaskStatus = 'processing' | 'ai_processing' | 'file_uploading' | 'generating_catalog' | 'catalog_ready' | 'generating_cards' | 'completed' | 'failed';
@@ -138,7 +139,8 @@ const getInputTypeInfo = (inputType: InputType) => {
 interface ResultsListProps {
   taskHistory?: Task[];
   isLoading?: boolean;
-  onSelectCatalog?: (taskId: string) => void; // 添加选择大纲的回调
+  onCatalogConfirm?: (selectedIds: string[]) => void; // 当用户确认选择章节时的回调
+  onToast?: (type: 'success' | 'error' | 'info' | 'warning', title: string, message?: string) => void; // Toast通知回调
 }
 
 /**
@@ -185,7 +187,7 @@ const formatDateTime = (dateString: string): string => {
  * 生成结果列表组件
  * 显示用户的历史任务和闪卡生成记录
  */
-export default function ResultsList({ taskHistory = [], isLoading = false }: ResultsListProps) {
+export default function ResultsList({ taskHistory = [], isLoading = false, onCatalogConfirm, onToast }: ResultsListProps) {
   const [tasks, setTasks] = useState<Task[]>(taskHistory);
 
   // 当传入的任务历史发生变化时，更新本地状态
@@ -196,6 +198,10 @@ export default function ResultsList({ taskHistory = [], isLoading = false }: Res
   }, [taskHistory]);
 
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+
+  // 大纲选择对话框状态
+  const [showCatalogModal, setShowCatalogModal] = useState(false);
+  const [selectedTaskIdForCatalog, setSelectedTaskIdForCatalog] = useState<string | null>(null);
 
   /**
    * 处理查看任务详情
@@ -210,6 +216,32 @@ export default function ResultsList({ taskHistory = [], isLoading = false }: Res
   const handleDownload = (taskId: string) => {
     console.log('下载闪卡:', taskId);
     // 这里将来会实现真实的下载功能
+  };
+
+  /**
+   * 处理选择大纲按钮点击
+   */
+  const handleSelectCatalog = (taskId: string) => {
+    setSelectedTaskIdForCatalog(taskId);
+    setShowCatalogModal(true);
+  };
+
+  /**
+   * 处理大纲选择确认
+   */
+  const handleCatalogConfirm = (selectedIds: string[]) => {
+    setShowCatalogModal(false);
+    setSelectedTaskIdForCatalog(null);
+    // 调用父组件传入的回调
+    onCatalogConfirm?.(selectedIds);
+  };
+
+  /**
+   * 处理大纲选择取消
+   */
+  const handleCatalogClose = () => {
+    setShowCatalogModal(false);
+    setSelectedTaskIdForCatalog(null);
   };
 
   return (
@@ -313,7 +345,7 @@ export default function ResultsList({ taskHistory = [], isLoading = false }: Res
                     )}
                     {task.status === 'catalog_ready' && (
                       <button
-                        onClick={() => onSelectCatalog?.(task.id)}
+                        onClick={() => handleSelectCatalog(task.id)}
                         className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
                       >
                         <DocumentTextIcon className="h-4 w-4 mr-1" />
@@ -391,6 +423,15 @@ export default function ResultsList({ taskHistory = [], isLoading = false }: Res
           </div>
         </div>
       )}
+
+      {/* 大纲选择对话框 */}
+      <CatalogSelectionWrapper
+        taskId={selectedTaskIdForCatalog}
+        isOpen={showCatalogModal}
+        onClose={handleCatalogClose}
+        onConfirm={handleCatalogConfirm}
+        onToast={onToast}
+      />
     </div>
   );
 }

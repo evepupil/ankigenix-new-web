@@ -21,7 +21,7 @@ import { supabaseServer } from '@/lib/supabase/server';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { taskId: string } }
+  { params }: { params: Promise<{ taskId: string }> }
 ) {
   try {
     // 获取当前用户
@@ -34,7 +34,8 @@ export async function GET(
       );
     }
 
-    const taskId = params.taskId;
+    const awaitedParams = await params;
+    const taskId = awaitedParams.taskId;
 
     // 查询大纲信息（RLS会自动确保只能查询自己的大纲）
     const { data: catalog, error } = await supabaseServer
