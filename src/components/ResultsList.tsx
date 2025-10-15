@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   ClockIcon,
   CheckCircleIcon,
@@ -188,6 +189,7 @@ const formatDateTime = (dateString: string): string => {
  * 显示用户的历史任务和闪卡生成记录
  */
 export default function ResultsList({ taskHistory = [], isLoading = false, onCatalogConfirm, onToast }: ResultsListProps) {
+  const router = useRouter();
   const [tasks, setTasks] = useState<Task[]>(taskHistory);
 
   // 当传入的任务历史发生变化时，更新本地状态
@@ -204,10 +206,10 @@ export default function ResultsList({ taskHistory = [], isLoading = false, onCat
   const [selectedTaskIdForCatalog, setSelectedTaskIdForCatalog] = useState<string | null>(null);
 
   /**
-   * 处理查看任务详情
+   * 处理预览任务 - 跳转到动态路由
    */
   const handleViewTask = (task: Task) => {
-    setSelectedTask(task);
+    router.push(`/preview/${task.id}`);
   };
 
   /**
@@ -378,51 +380,6 @@ export default function ResultsList({ taskHistory = [], isLoading = false, onCat
           </div>
         )}
       </div>
-
-      {/* 任务详情模态框 */}
-      {selectedTask && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
-            <div className="mt-3">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-medium text-gray-900">
-                  闪卡预览 - {getTaskTitle(selectedTask)}
-                </h3>
-                <button
-                  onClick={() => setSelectedTask(null)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-
-              {/* 这里将来会显示实际的闪卡预览内容 */}
-              <div className="bg-gray-50 rounded-lg p-6 mb-4">
-                <p className="text-gray-600 text-center">
-                  闪卡预览功能开发中...
-                </p>
-              </div>
-
-              <div className="flex justify-end space-x-3">
-                <button
-                  onClick={() => setSelectedTask(null)}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
-                >
-                  关闭
-                </button>
-                <button
-                  onClick={() => handleDownload(selectedTask.id)}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700"
-                >
-                  下载 .apkg
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* 大纲选择对话框 */}
       <CatalogSelectionWrapper

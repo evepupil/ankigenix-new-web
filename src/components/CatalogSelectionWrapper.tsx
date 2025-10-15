@@ -102,7 +102,7 @@ export default function CatalogSelectionWrapper({
         const token = localStorage.getItem('auth_token');
 
         // 从API获取大纲信息
-        const response = await fetch(`/api/catalog/${taskId}`, {
+        const response = await fetch(`/api/catalog/getByTaskId/${taskId}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
