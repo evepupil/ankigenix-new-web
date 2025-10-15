@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLocale } from '@/hooks/useLocale';
 
 /**
  * 登录页面组件
@@ -13,6 +14,7 @@ import { useAuth } from '@/contexts/AuthContext';
 export default function Login() {
   const router = useRouter();
   const { login, isAuthenticated } = useAuth();
+  const { t } = useLocale();
 
   // 表单状态
   const [formData, setFormData] = useState({
@@ -57,15 +59,15 @@ export default function Login() {
     const newErrors: {[key: string]: string} = {};
     
     if (!formData.email) {
-      newErrors.email = '请输入邮箱地址';
+      newErrors.email = t('auth.enterEmail');
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = '请输入有效的邮箱地址';
+      newErrors.email = t('auth.validEmail');
     }
     
     if (!formData.password) {
-      newErrors.password = '请输入密码';
+      newErrors.password = t('auth.enterPassword');
     } else if (formData.password.length < 6) {
-      newErrors.password = '密码长度至少6位';
+      newErrors.password = t('auth.passwordLength');
     }
     
     setErrors(newErrors);
@@ -93,7 +95,7 @@ export default function Login() {
       const data = await res.json();
 
       if (!res.ok || data.error) {
-        setErrors({ general: data.error || '登录失败，请检查邮箱和密码' });
+        setErrors({ general: data.error || t('auth.loginFailed') });
       } else if (data.session?.access_token && data.user) {
         // 登录成功，保存token和用户信息
         login(data.session.access_token, data.user);
@@ -101,11 +103,11 @@ export default function Login() {
         // 跳转到dashboard
         router.push('/dashboard');
       } else {
-        setErrors({ general: '登录响应格式错误' });
+        setErrors({ general: t('auth.loginResponseError') });
       }
     } catch (error) {
       console.error('登录错误:', error);
-      setErrors({ general: '网络错误，请稍后重试' });
+      setErrors({ general: t('auth.networkError') });
     } finally {
       setIsLoading(false);
     }
@@ -128,12 +130,12 @@ export default function Login() {
             <div className="text-2xl font-bold text-blue-600">Ankigenix</div>
           </Link>
           <h2 className="mt-6 text-3xl font-bold text-gray-900">
-            登录您的账户
+            {t('auth.signIn')}
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            还没有账户？{' '}
+            {t('auth.noAccountYet')}{' '}
             <Link href="/register" className="font-medium text-blue-600 hover:text-blue-500">
-              立即注册
+              {t('auth.signUp')}
             </Link>
           </p>
         </div>
@@ -153,7 +155,7 @@ export default function Login() {
             {/* 邮箱输入 */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                邮箱地址
+                {t('auth.email')}
               </label>
               <div className="mt-1">
                 <input
@@ -166,7 +168,7 @@ export default function Login() {
                   className={`appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${
                     errors.email ? 'border-red-300' : 'border-gray-300'
                   }`}
-                  placeholder="请输入邮箱地址"
+                  placeholder={t('auth.enterEmail')}
                 />
                 {errors.email && (
                   <p className="mt-2 text-sm text-red-600">{errors.email}</p>
@@ -177,7 +179,7 @@ export default function Login() {
             {/* 密码输入 */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                密码
+                {t('auth.password')}
               </label>
               <div className="mt-1 relative">
                 <input
@@ -190,7 +192,7 @@ export default function Login() {
                   className={`appearance-none block w-full px-3 py-2 pr-10 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${
                     errors.password ? 'border-red-300' : 'border-gray-300'
                   }`}
-                  placeholder="请输入密码"
+                  placeholder={t('auth.enterPassword')}
                 />
                 <button
                   type="button"
@@ -219,13 +221,13 @@ export default function Login() {
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
                 <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                  记住我
+                  {t('auth.rememberMe')}
                 </label>
               </div>
 
               <div className="text-sm">
                 <Link href="/forgot-password" className="font-medium text-blue-600 hover:text-blue-500">
-                  忘记密码？
+                  {t('auth.forgotPassword')}
                 </Link>
               </div>
             </div>
@@ -247,10 +249,10 @@ export default function Login() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    登录中...
+                    {t('auth.signIn') + '...'}
                   </div>
                 ) : (
-                  '登录'
+                  t('auth.signIn')
                 )}
               </button>
             </div>
@@ -263,7 +265,7 @@ export default function Login() {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">或者</span>
+                <span className="px-2 bg-white text-gray-500">{t('common.or')}</span>
               </div>
             </div>
           </div>

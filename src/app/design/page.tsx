@@ -1,16 +1,18 @@
 'use client';
 
 import React from 'react';
+import { useLocale } from '@/hooks/useLocale';
 
 export default function DesignSystemPage() {
+  const { t } = useLocale();
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white py-20 px-4">
         <div className="max-w-6xl mx-auto">
-          <h1 className="text-5xl font-bold mb-4">AnkiGenix Design System</h1>
-          <p className="text-xl text-blue-100">极简配色方案 · Blue · Black · Gray · White</p>
-          <p className="text-gray-300 mt-2">专注学习，减少认知负载</p>
+          <h1 className="text-5xl font-bold mb-4">{t('design.title')}</h1>
+          <p className="text-xl text-blue-100">{t('design.colorScheme')}</p>
+          <p className="text-gray-300 mt-2">{t('design.focus')}</p>
         </div>
       </section>
 

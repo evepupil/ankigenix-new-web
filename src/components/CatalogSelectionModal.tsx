@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
+import { useLocale } from '@/hooks/useLocale';
 
 /**
  * 章节数据结构
@@ -48,6 +49,7 @@ export default function CatalogSelectionModal({
   onClose,
   onConfirm,
 }: CatalogSelectionModalProps) {
+  const { t } = useLocale();
   // 选中的ID集合（章节、小节、子小节的ID）
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   // 展开的章节ID集合
@@ -264,7 +266,7 @@ export default function CatalogSelectionModal({
         {/* 头部 */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">选择要生成的章节</h2>
+            <h2 className="text-xl font-semibold text-gray-900">{t('flashcard.selectSections')}</h2>
             <p className="text-sm text-gray-500 mt-1">{fileName}</p>
           </div>
           <button
@@ -281,10 +283,10 @@ export default function CatalogSelectionModal({
             onClick={toggleSelectAll}
             className="text-sm text-gray-700 hover:text-gray-900 font-medium transition-colors"
           >
-            {selectedCount === totalCount ? '取消全选' : '全选'}
+            {selectedCount === totalCount ? t('common.deselectAll') : t('common.selectAll')}
           </button>
           <span className="text-sm text-gray-600">
-            已选择 <span className="font-semibold text-gray-900">{selectedCount}</span> / {totalCount} 个章节
+            {t('common.selected')} <span className="font-semibold text-gray-900">{selectedCount}</span> / {totalCount} {t('common.sections')}
           </span>
         </div>
 
@@ -429,7 +431,7 @@ export default function CatalogSelectionModal({
             onClick={onClose}
             className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
           >
-            取消
+            {t('common.cancel')}
           </button>
           <button
             onClick={handleConfirm}
@@ -440,7 +442,7 @@ export default function CatalogSelectionModal({
                 : 'bg-gray-900 hover:bg-gray-800 hover:shadow-lg'
             }`}
           >
-            生成闪卡 ({selectedCount})
+            {t('flashcard.create')} ({selectedCount})
           </button>
         </div>
       </div>

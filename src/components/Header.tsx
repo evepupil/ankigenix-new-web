@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLocale } from '@/hooks/useLocale';
 
 /**
  * 公共头部导航栏组件 - 极简设计
@@ -12,9 +13,9 @@ import { useAuth } from '@/contexts/AuthContext';
 export default function Header() {
   const pathname = usePathname();
   const { user, isAuthenticated, logout } = useAuth();
+  const { t, currentLanguage, changeLanguage } = useLocale();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [language, setLanguage] = useState('zh');
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   /**
@@ -35,7 +36,8 @@ export default function Header() {
    * 切换语言设置
    */
   const toggleLanguage = () => {
-    setLanguage(language === 'zh' ? 'en' : 'zh');
+    const newLanguage = currentLanguage === 'zh' ? 'en' : 'zh';
+    changeLanguage(newLanguage);
   };
 
   /**
@@ -100,7 +102,7 @@ export default function Header() {
                   : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
               }`}
             >
-              首页
+              {t('nav.home')}
             </Link>
             <Link
               href="/features"
@@ -110,7 +112,7 @@ export default function Header() {
                   : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
               }`}
             >
-              功能
+              {t('nav.features')}
             </Link>
             <Link
               href="/pricing"
@@ -120,7 +122,7 @@ export default function Header() {
                   : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
               }`}
             >
-              定价
+              {t('nav.pricing')}
             </Link>
             {isAuthenticated && (
               <Link
@@ -131,7 +133,7 @@ export default function Header() {
                     : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >
-                控制台
+                {t('nav.dashboard')}
               </Link>
             )}
           </nav>
@@ -143,7 +145,7 @@ export default function Header() {
               onClick={toggleLanguage}
               className="px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-all"
             >
-              {language === 'zh' ? '中文' : 'EN'}
+              {currentLanguage === 'zh' ? '中文' : 'EN'}
             </button>
 
             {/* 登录状态 - 仅显示头像 */}
@@ -189,7 +191,7 @@ export default function Header() {
                         <svg className="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                         </svg>
-                        控制台
+                        {t('header.console')}
                       </Link>
 
                       <Link
@@ -201,7 +203,7 @@ export default function Header() {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
-                        个人设置
+                        {t('header.settings')}
                       </Link>
 
                       <div className="border-t border-gray-200 my-1"></div>
@@ -213,7 +215,7 @@ export default function Header() {
                         <svg className="w-4 h-4 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                         </svg>
-                        退出登录
+                        {t('header.logout')}
                       </button>
                     </div>
                   </div>
@@ -225,13 +227,13 @@ export default function Header() {
                   href="/login"
                   className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
                 >
-                  登录
+                  {t('nav.login')}
                 </Link>
                 <Link
                   href="/register"
                   className="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 shadow-sm hover:shadow transition-all"
                 >
-                  注册
+                  {t('nav.register')}
                 </Link>
               </div>
             )}
@@ -282,7 +284,7 @@ export default function Header() {
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                首页
+                {t('nav.home')}
               </Link>
               <Link
                 href="/features"
@@ -293,7 +295,7 @@ export default function Header() {
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                功能
+                {t('nav.features')}
               </Link>
               <Link
                 href="/pricing"
@@ -304,7 +306,7 @@ export default function Header() {
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                定价
+                {t('nav.pricing')}
               </Link>
               {isAuthenticated && (
                 <Link
@@ -316,7 +318,7 @@ export default function Header() {
                   }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  控制台
+                  {t('nav.dashboard')}
                 </Link>
               )}
 
@@ -327,7 +329,7 @@ export default function Header() {
                     onClick={toggleLanguage}
                     className="px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-all"
                   >
-                    {language === 'zh' ? '中文' : 'EN'}
+                    {currentLanguage === 'zh' ? '中文' : 'EN'}
                   </button>
                 </div>
 
@@ -360,7 +362,7 @@ export default function Header() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                           </svg>
-                          个人设置
+                          {t('header.settings')}
                         </Link>
 
                         <button
@@ -370,7 +372,7 @@ export default function Header() {
                           <svg className="w-4 h-4 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                           </svg>
-                          退出登录
+                          {t('header.logout')}
                         </button>
                       </div>
                     </div>
@@ -382,14 +384,14 @@ export default function Header() {
                       className="flex-1 px-4 py-2.5 text-center text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-all"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      登录
+                      {t('nav.login')}
                     </Link>
                     <Link
                       href="/register"
                       className="flex-1 px-4 py-2.5 text-center bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 shadow-sm hover:shadow transition-all"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      注册
+                      {t('nav.register')}
                     </Link>
                   </div>
                 )}
