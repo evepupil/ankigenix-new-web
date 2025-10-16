@@ -35,8 +35,9 @@ export async function POST(request: NextRequest) {
     const redirectTo = `${request.nextUrl.origin}/auth/callback`;
 
     // 发起 OAuth 登录
+    type OAuthProvider = 'google' | 'github' | 'apple' | 'facebook' | 'azure' | 'bitbucket' | 'gitlab' | 'twitter';
     const { data, error } = await supabaseServer.auth.signInWithOAuth({
-      provider: provider as any,
+      provider: provider as OAuthProvider,
       options: {
         redirectTo,
       },

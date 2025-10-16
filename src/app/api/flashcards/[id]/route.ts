@@ -68,7 +68,14 @@ export async function PATCH(
     }
 
     // 构建更新数据
-    const updateData: any = {
+    interface UpdateData {
+      card_data: Record<string, unknown>;
+      updated_at: string;
+      is_deleted?: boolean;
+      deleted_at?: string | null;
+    }
+
+    const updateData: UpdateData = {
       card_data,
       updated_at: new Date().toISOString(),
     };

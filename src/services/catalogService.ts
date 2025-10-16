@@ -1,13 +1,38 @@
 import { supabaseServer } from '@/lib/supabase/server';
 
 /**
+ * 章节数据结构（与 api.ts 保持一致）
+ */
+interface Subsection {
+  subsection: string;
+  description?: string;
+}
+
+interface Section {
+  section: string;
+  description?: string;
+  subsections?: Subsection[];
+}
+
+interface Chapter {
+  chapter: string;
+  description?: string;
+  sections?: Section[];
+}
+
+/**
+ * 大纲数据类型（可以是 Chapter 数组或其他结构）
+ */
+type CatalogData = Chapter[] | Record<string, unknown>[];
+
+/**
  * 大纲信息接口
  */
 export interface CatalogInfo {
   id: string;
   task_id: string;
   user_id: string;
-  catalog_data: any[]; // 大纲数据JSON
+  catalog_data: CatalogData; // 大纲数据JSON
   selected: string[]; // 选中的章节ID列表
   created_at: string;
   updated_at: string;
@@ -54,7 +79,7 @@ class CatalogService {
    * @param userId 用户ID（用于权限验证）
    * @returns 大纲数据数组
    */
-  async getCatalogDataByTaskId(taskId: string, userId: string): Promise<any[] | null> {
+  async getCatalogDataByTaskId(taskId: string, userId: string): Promise<CatalogData | null> {
     const catalogInfo = await this.getCatalogByTaskId(taskId, userId);
     return catalogInfo ? catalogInfo.catalog_data : null;
   }

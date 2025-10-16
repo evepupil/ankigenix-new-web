@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 创建任务
-    const { data: task, error } = await supabaseServer
+    const { data: task, error } = await (supabaseServer
       .from('task_info')
       .insert({
         user_id: userId,
@@ -71,9 +71,9 @@ export async function POST(request: NextRequest) {
         workflow_type,
         input_data,
         status: 'processing', // 初始状态
-      })
+      } as never)
       .select()
-      .single();
+      .single());
 
     if (error) {
       console.error('Failed to create task:', error);
