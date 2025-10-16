@@ -381,7 +381,7 @@ export default function CatalogSelectionModal({
                   <div className="ml-16 mt-1 space-y-1">
                     {chapter.sections?.map((section) => {
                       const sectionSubKey = section.id || `${chapterKey}-section-${chapter.sections!.indexOf(section)}`;
-                      
+
                       return (
                         <div key={sectionSubKey}>
                           {section.subsections && section.subsections.length > 0 && (
@@ -390,7 +390,7 @@ export default function CatalogSelectionModal({
 
                               return (
                                 <div
-                                  key={subsection.id || `subsection-${sectionKey}-${section.subsections!.indexOf(subsection)}`}
+                                  key={subsection.id || `subsection-${sectionSubKey}-${section.subsections!.indexOf(subsection)}`}
                                   className="flex items-start space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
                                 >
                                   <input

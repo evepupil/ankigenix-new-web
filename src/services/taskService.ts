@@ -17,14 +17,14 @@ class TaskService {
    * @returns 创建的任务信息
    */
   async createTask(userId: string, taskData: Omit<TaskInfoInsert, 'user_id'>): Promise<TaskInfo> {
-    const { data, error } = await supabaseServer
+    const { data, error } = await (supabaseServer
       .from(this.tableName)
       .insert({
         ...taskData,
         user_id: userId,
-      })
+      } as never)
       .select()
-      .single();
+      .single());
 
     if (error) throw error;
     return data;
@@ -101,13 +101,13 @@ class TaskService {
    * @returns 更新后的任务信息
    */
   async updateTaskStatus(taskId: string, userId: string, status: TaskStatus): Promise<TaskInfo> {
-    const { data, error } = await supabaseServer
+    const { data, error } = await (supabaseServer
       .from(this.tableName)
-      .update({ status })
+      .update({ status } as never)
       .eq('id', taskId)
       .eq('user_id', userId) // 确保只能更新自己的任务
       .select()
-      .single();
+      .single());
 
     if (error) throw error;
     return data;
@@ -121,13 +121,13 @@ class TaskService {
    * @returns 更新后的任务信息
    */
   async updateTask(taskId: string, userId: string, updates: TaskInfoUpdate): Promise<TaskInfo> {
-    const { data, error } = await supabaseServer
+    const { data, error } = await (supabaseServer
       .from(this.tableName)
-      .update(updates)
+      .update(updates as never)
       .eq('id', taskId)
       .eq('user_id', userId) // 确保只能更新自己的任务
       .select()
-      .single();
+      .single());
 
     if (error) throw error;
     return data;
