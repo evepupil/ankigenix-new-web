@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { ArrowLeftIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, ArrowDownTrayIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import FlashcardList, { Flashcard, Chapter } from '@/components/preview/FlashcardList';
 
@@ -19,6 +19,9 @@ function TaskPreviewContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [taskInfo, setTaskInfo] = useState<any>(null);
+  const [showExportMenu, setShowExportMenu] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const exportMenuRef = useRef<HTMLDivElement>(null);
 
   // 从API获取任务数据
   useEffect(() => {
@@ -153,10 +156,76 @@ function TaskPreviewContent() {
   /**
    * 导出闪卡
    */
-  const handleExport = () => {
-    // TODO: 调用导出 API
-    alert('导出功能开发中...');
+  const handleExport = async (format: 'apkg' | 'csv') => {
+    if (!taskId) {
+      alert('任务ID不存在');
+      return;
+    }
+
+    try {
+      setIsExporting(true);
+      setShowExportMenu(false);
+
+      // 使用与 api.ts 相同的后端API地址配置
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+
+      // 构建导出URL
+      const exportUrl = `${API_BASE_URL}/flashcards/export/?task_id=${taskId}&format=${format}`;
+
+      // 使用 fetch 下载文件
+      const response = await fetch(exportUrl, {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.error || '导出失败');
+      }
+
+      // 获取文件名（从响应头）
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let fileName = format === 'apkg' ? 'flashcards.apkg' : 'flashcards.csv';
+
+      if (contentDisposition) {
+        const fileNameMatch = contentDisposition.match(/filename="?(.+)"?/);
+        if (fileNameMatch && fileNameMatch[1]) {
+          fileName = fileNameMatch[1].replace(/"/g, '');
+        }
+      }
+
+      // 下载文件
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      console.log(`导出成功: ${format.toUpperCase()} - ${fileName}`);
+    } catch (error) {
+      console.error('导出失败:', error);
+      alert(error instanceof Error ? error.message : '导出失败，请稍后重试');
+    } finally {
+      setIsExporting(false);
+    }
   };
+
+  // 点击外部关闭下拉菜单
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (exportMenuRef.current && !exportMenuRef.current.contains(event.target as Node)) {
+        setShowExportMenu(false);
+      }
+    };
+
+    if (showExportMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showExportMenu]);
 
   if (isLoading) {
     return (
@@ -236,13 +305,46 @@ function TaskPreviewContent() {
                 总计: <span className="font-semibold">{flashcards.filter(c => !c.is_deleted).length}</span> 张
               </div>
 
-              <button
-                onClick={handleExport}
-                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                <ArrowDownTrayIcon className="h-4 w-4" />
-                <span>导出 Anki</span>
-              </button>
+              {/* 导出按钮（带下拉菜单） */}
+              <div className="relative" ref={exportMenuRef}>
+                <button
+                  onClick={() => setShowExportMenu(!showExportMenu)}
+                  disabled={isExporting}
+                  className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ArrowDownTrayIcon className="h-4 w-4" />
+                  <span>{isExporting ? '导出中...' : '导出'}</span>
+                  <ChevronDownIcon className="h-4 w-4" />
+                </button>
+
+                {/* 下拉菜单 */}
+                {showExportMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                    <div className="py-1">
+                      <button
+                        onClick={() => handleExport('apkg')}
+                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                      >
+                        <ArrowDownTrayIcon className="h-4 w-4" />
+                        <div>
+                          <div className="font-medium">导出为 Anki 包</div>
+                          <div className="text-xs text-gray-500">.apkg 格式</div>
+                        </div>
+                      </button>
+                      <button
+                        onClick={() => handleExport('csv')}
+                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                      >
+                        <ArrowDownTrayIcon className="h-4 w-4" />
+                        <div>
+                          <div className="font-medium">导出为 CSV</div>
+                          <div className="text-xs text-gray-500">.csv 格式</div>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
