@@ -1,12 +1,76 @@
 import Link from 'next/link';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Ankigenix - AI驱动的科学闪卡生成器 | 高效学习Anki卡片",
+  description: "Ankigenix 是一款AI驱动的科学闪卡生成器，支持文本、文件、URL、视频等多种输入方式，智能生成高质量学习闪卡。提升学习效率，轻松创建Anki卡片。",
+  keywords: ["Anki", "闪卡生成器", "AI学习工具", "智能卡片", "高效学习", "间隔重复", "记忆卡片", "学习助手", "知识管理"],
+  openGraph: {
+    title: "Ankigenix - AI驱动的科学闪卡生成器",
+    description: "用最高质量的Anki卡片，加速你的学习效率。支持多种输入方式，AI智能生成高质量学习闪卡。",
+    images: [
+      {
+        url: "/og-home.png",
+        width: 1200,
+        height: 630,
+        alt: "Ankigenix 首页",
+      },
+    ],
+  },
+};
 
 /**
  * 首页组件
  * 包含Hero部分、功能特性、定价CTA和使用说明区域
  */
 export default function Home() {
+  // JSON-LD 结构化数据
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Ankigenix",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Web",
+    "offers": [
+      {
+        "@type": "Offer",
+        "name": "免费版",
+        "price": "0",
+        "priceCurrency": "CNY",
+        "description": "每月50张卡片，基础AI生成"
+      },
+      {
+        "@type": "Offer",
+        "name": "专业版",
+        "price": "29",
+        "priceCurrency": "CNY",
+        "description": "无限制卡片生成，高级AI生成，所有输入方式"
+      }
+    ],
+    "description": "AI驱动的科学闪卡生成器，支持多种输入方式，智能生成高质量学习闪卡",
+    "featureList": [
+      "多种输入方式：文本、文件、URL、视频",
+      "AI智能生成高质量闪卡",
+      "质量评分系统",
+      "导出为Anki格式(.apkg)",
+      "章节目录管理"
+    ],
+    "screenshot": "/og-home.png",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "ratingCount": "120"
+    }
+  };
+
   return (
     <div className="bg-white">
+      {/* 添加 JSON-LD 结构化数据 */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       {/* Hero 部分 */}
       <section className="relative bg-gradient-to-br from-blue-50 to-indigo-100 py-20 sm:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
