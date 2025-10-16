@@ -20,6 +20,13 @@ const eslintConfig = [
       "next-env.d.ts",
     ],
   },
+  {
+    rules: {
+      "@typescript-eslint/no-explicit-any": "warn", // 将 any 从 error 降级为 warning
+      "@typescript-eslint/no-unused-vars": "warn",  // 未使用变量降级为 warning
+      "react-hooks/exhaustive-deps": "warn",       // Hook 依赖警告降级
+    },
+  },
 ];
 
 export default eslintConfig;

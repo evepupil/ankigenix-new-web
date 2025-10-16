@@ -68,6 +68,23 @@ interface Chapter {
 }
 
 /**
+ * API 请求体类型定义
+ */
+interface TextGenerateRequest {
+  text: string;
+  task_id?: string;
+  card_number?: number;
+  lang?: string;
+}
+
+interface UrlGenerateRequest {
+  url: string;
+  task_id?: string;
+  card_number: number;
+  lang: string;
+}
+
+/**
  * API服务类，用于与后端API交互
  */
 class ApiService {
@@ -85,7 +102,7 @@ class ApiService {
     lang: string = 'zh'
   ): Promise<{ success: boolean; cards?: Flashcard[]; error?: string }> {
     try {
-      const requestBody: any = { text };
+      const requestBody: TextGenerateRequest = { text };
 
       // 添加可选参数
       if (taskId) {
@@ -202,7 +219,7 @@ class ApiService {
     lang: string = 'zh'
   ): Promise<{ success: boolean; cards?: Flashcard[]; error?: string; count?: number; crawledLength?: number }> {
     try {
-      const requestBody: any = {
+      const requestBody: UrlGenerateRequest = {
         url,
         card_number: cardNumber,
         lang

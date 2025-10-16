@@ -10,9 +10,11 @@ const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Await params in Next.js 15
+    const { id: catalogId } = await params;
     // 从请求头获取 token
     const authHeader = request.headers.get('Authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -46,7 +48,6 @@ export async function GET(
     }
 
     const userId = user.id;
-    const catalogId = params.id;
 
     // 查询大纲数据
     const { data: catalog, error: catalogError } = await supabaseServer

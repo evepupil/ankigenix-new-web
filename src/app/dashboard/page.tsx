@@ -203,7 +203,13 @@ function DashboardPage() {
         inputTitle = `${t('dashboard.textGeneration')} - ${textInput.substring(0, 30)}${textInput.length > 30 ? '...' : ''}`;
       } else if (activeTab === 'file') {
         // 文件生成：先生成大纲，让用户选择章节
-        showToast('info', t('dashboard.analyzingFileOutline'), t('dashboard.pleaseWait'));
+        if (!selectedFile) {
+          showToast('error', '文件丢失', '请重新上传文件');
+          setIsProcessing(false);
+          return;
+        }
+
+        showToast('info', '正在分析文件大纲', '请稍候...');
 
         const catalogResult = await apiService.generateCatalogFromFile(selectedFile, taskId || undefined);
 
@@ -241,7 +247,7 @@ function DashboardPage() {
         return;
       }
 
-      if (result.success && result.cards) {
+      if (result && result.success && result.cards) {
         // 为每张卡片添加唯一ID
         const cardsWithIds = result.cards.map((card: Flashcard, index: number) => ({
           ...card,
@@ -285,7 +291,7 @@ function DashboardPage() {
           router.push('/preview');
         }, 1500);
       } else {
-        showToast('error', t('dashboard.generationFailed'), result.error || t('dashboard.unknownError'));
+        showToast('error', '生成失败', result?.error || '未知错误');
       }
     } catch (error) {
       console.error('生成闪卡时出错:', error);

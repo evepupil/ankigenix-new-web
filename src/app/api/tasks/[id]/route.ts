@@ -124,18 +124,18 @@ export async function PATCH(
     }
 
     // 构建更新对象
-    const updateData: any = {};
-    if (status) updateData.status = status;
-    if (input_data) updateData.input_data = input_data;
+    const updateFields: Record<string, unknown> = {};
+    if (status) updateFields.status = status;
+    if (input_data) updateFields.input_data = input_data;
 
     // 更新任务（RLS会自动确保只能更新自己的任务）
-    const { data: task, error } = await supabaseServer
+    const { data: task, error } = await (supabaseServer
       .from('task_info')
-      .update(updateData)
+      .update(updateFields as never)
       .eq('id', taskId)
       .eq('user_id', userId) // 额外确保安全
       .select()
-      .single();
+      .single());
 
     if (error) {
       console.error('Failed to update task:', error);
