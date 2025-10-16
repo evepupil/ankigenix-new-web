@@ -14,6 +14,7 @@ import {
   LightBulbIcon
 } from '@heroicons/react/24/outline';
 import CatalogSelectionWrapper from './CatalogSelectionWrapper';
+import { useLocale } from '@/hooks/useLocale';
 
 // 任务状态类型（对应数据库的status字段）
 type TaskStatus = 'processing' | 'ai_processing' | 'file_uploading' | 'generating_catalog' | 'catalog_ready' | 'generating_cards' | 'completed' | 'failed';
@@ -44,61 +45,61 @@ interface Task {
 /**
  * 获取任务状态的显示信息
  */
-const getStatusInfo = (status: TaskStatus) => {
+const getStatusInfo = (status: TaskStatus, t: any) => {
   switch (status) {
     case 'processing':
       return {
         icon: ClockIcon,
-        text: '处理中',
+        text: t('task.processing'),
         color: 'text-blue-600',
         bgColor: 'bg-blue-100'
       };
     case 'ai_processing':
       return {
         icon: ClockIcon,
-        text: 'AI处理中',
+        text: t('task.aiProcessing'),
         color: 'text-blue-600',
         bgColor: 'bg-blue-100'
       };
     case 'file_uploading':
       return {
         icon: ClockIcon,
-        text: '文件上传中',
+        text: t('task.fileUploading'),
         color: 'text-blue-600',
         bgColor: 'bg-blue-100'
       };
     case 'generating_catalog':
       return {
         icon: ClockIcon,
-        text: '生成大纲中',
+        text: t('task.generatingCatalog'),
         color: 'text-blue-600',
         bgColor: 'bg-blue-100'
       };
     case 'catalog_ready':
       return {
         icon: ClockIcon,
-        text: '大纲已完成',
+        text: t('task.catalogReady'),
         color: 'text-yellow-600',
         bgColor: 'bg-yellow-100'
       };
     case 'generating_cards':
       return {
         icon: ClockIcon,
-        text: '生成闪卡中',
+        text: t('task.generatingCards'),
         color: 'text-blue-600',
         bgColor: 'bg-blue-100'
       };
     case 'completed':
       return {
         icon: CheckCircleIcon,
-        text: '已完成',
+        text: t('task.completed'),
         color: 'text-green-600',
         bgColor: 'bg-green-100'
       };
     case 'failed':
       return {
         icon: XCircleIcon,
-        text: '失败',
+        text: t('task.failed'),
         color: 'text-red-600',
         bgColor: 'bg-red-100'
       };
@@ -108,30 +109,30 @@ const getStatusInfo = (status: TaskStatus) => {
 /**
  * 获取输入类型的显示信息
  */
-const getInputTypeInfo = (inputType: InputType) => {
+const getInputTypeInfo = (inputType: InputType, t: any) => {
   switch (inputType) {
     case 'text':
       return {
         icon: DocumentTextIcon,
-        text: '文本输入',
+        text: t('input.text'),
         color: 'text-gray-600'
       };
     case 'file':
       return {
         icon: DocumentTextIcon,
-        text: '文件上传',
+        text: t('input.file'),
         color: 'text-purple-600'
       };
     case 'web':
       return {
         icon: LinkIcon,
-        text: '网页链接',
+        text: t('input.web'),
         color: 'text-blue-600'
       };
     case 'topic':
       return {
         icon: LightBulbIcon,
-        text: '主题生成',
+        text: t('input.topic'),
         color: 'text-orange-600'
       };
   }
@@ -147,12 +148,12 @@ interface ResultsListProps {
 /**
  * 从任务数据生成标题
  */
-const getTaskTitle = (task: Task): string => {
+const getTaskTitle = (task: Task, t: any): string => {
   const { task_type, input_data } = task;
 
   if (task_type === 'text' && input_data.text) {
     const preview = input_data.text.substring(0, 30);
-    return `文本生成 - ${preview}${input_data.text.length > 30 ? '...' : ''}`;
+    return `${t('task.textGeneration')} - ${preview}${input_data.text.length > 30 ? '...' : ''}`;
   }
 
   if (task_type === 'file' && input_data.file) {
@@ -160,14 +161,14 @@ const getTaskTitle = (task: Task): string => {
   }
 
   if (task_type === 'web' && input_data.web_url) {
-    return `网页生成 - ${input_data.web_url}`;
+    return `${t('task.webGeneration')} - ${input_data.web_url}`;
   }
 
   if (task_type === 'topic' && input_data.topic) {
-    return `主题生成 - ${input_data.topic}`;
+    return `${t('task.topicGeneration')} - ${input_data.topic}`;
   }
 
-  return '未知任务';
+  return t('task.unknownTask');
 };
 
 /**
@@ -190,6 +191,7 @@ const formatDateTime = (dateString: string): string => {
  */
 export default function ResultsList({ taskHistory = [], isLoading = false, onCatalogConfirm, onToast }: ResultsListProps) {
   const router = useRouter();
+  const { t } = useLocale();
   const [tasks, setTasks] = useState<Task[]>(taskHistory);
 
   // 当传入的任务历史发生变化时，更新本地状态
@@ -250,9 +252,9 @@ export default function ResultsList({ taskHistory = [], isLoading = false, onCat
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-900">生成历史</h2>
+          <h2 className="text-xl font-semibold text-gray-900">{t('results.generationHistory')}</h2>
           <div className="text-sm text-gray-500">
-            共 {tasks.length} 个任务
+            {t('results.totalTasks', { count: tasks.length })}
           </div>
         </div>
 
@@ -287,11 +289,11 @@ export default function ResultsList({ taskHistory = [], isLoading = false, onCat
         {!isLoading && tasks.length > 0 && (
           <div className="space-y-4">
           {tasks.map((task) => {
-            const statusInfo = getStatusInfo(task.status);
-            const inputTypeInfo = getInputTypeInfo(task.task_type);
+            const statusInfo = getStatusInfo(task.status, t);
+            const inputTypeInfo = getInputTypeInfo(task.task_type, t);
             const StatusIcon = statusInfo.icon;
             const InputIcon = inputTypeInfo.icon;
-            const title = getTaskTitle(task);
+            const title = getTaskTitle(task, t);
 
             return (
               <div
@@ -310,12 +312,12 @@ export default function ResultsList({ taskHistory = [], isLoading = false, onCat
                     </div>
 
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
-                      <span>创建时间: {formatDateTime(task.created_at)}</span>
+                      <span>{t('results.createTime', { time: formatDateTime(task.created_at) })}</span>
                       {task.status === 'completed' && (
-                        <span>完成时间: {formatDateTime(task.updated_at)}</span>
+                        <span>{t('results.completionTime', { time: formatDateTime(task.updated_at) })}</span>
                       )}
                       {task.input_data.card_count && (
-                        <span>卡片数量: {task.input_data.card_count}</span>
+                        <span>{t('results.cardsCount', { count: task.input_data.card_count })}</span>
                       )}
                     </div>
                   </div>
@@ -329,20 +331,20 @@ export default function ResultsList({ taskHistory = [], isLoading = false, onCat
                           className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                         >
                           <EyeIcon className="h-4 w-4 mr-1" />
-                          预览
+                          {t('flashcard.preview')}
                         </button>
                         <button
                           onClick={() => handleDownload(task.id)}
                           className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                         >
                           <ArrowDownTrayIcon className="h-4 w-4 mr-1" />
-                          下载
+                          {t('results.download')}
                         </button>
                       </>
                     )}
                     {(task.status === 'processing' || task.status === 'ai_processing' || task.status === 'generating_cards' || task.status === 'generating_catalog' || task.status === 'file_uploading') && (
                       <div className="text-sm text-blue-600 font-medium">
-                        处理中...
+                        {t('results.processing')}
                       </div>
                     )}
                     {task.status === 'catalog_ready' && (
@@ -351,14 +353,14 @@ export default function ResultsList({ taskHistory = [], isLoading = false, onCat
                         className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
                       >
                         <DocumentTextIcon className="h-4 w-4 mr-1" />
-                        选择章节
+                        {t('results.selectSections')}
                       </button>
                     )}
                     {task.status === 'failed' && (
                       <button
                         className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                       >
-                        重试
+                        {t('results.retry')}
                       </button>
                     )}
                   </div>
@@ -373,9 +375,9 @@ export default function ResultsList({ taskHistory = [], isLoading = false, onCat
         {!isLoading && tasks.length === 0 && (
           <div className="text-center py-12">
             <DocumentTextIcon className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">暂无生成记录</h3>
+            <h3 className="mt-2 text-sm font-medium text-gray-900">{t('results.noRecords')}</h3>
             <p className="mt-1 text-sm text-gray-500">
-              开始创建您的第一个闪卡集吧！
+              {t('results.noRecordsDescription')}
             </p>
           </div>
         )}

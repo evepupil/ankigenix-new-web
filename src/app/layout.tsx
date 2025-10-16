@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import { AuthProvider } from "@/contexts/AuthContext";
 import I18nProvider from "@/components/I18nProvider";
+import HtmlLang from "@/components/HtmlLang";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -73,6 +74,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <I18nProvider>
+          <HtmlLang />
           <AuthProvider>
             <Header />
             <main className="min-h-screen">
