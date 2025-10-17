@@ -12,7 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
  */
 export default function Register() {
   const router = useRouter();
-  const { login, isAuthenticated } = useAuth();
+  const { signUpWithEmail, signInWithOAuth, isAuthenticated } = useAuth();
 
   // 表单状态
   const [formData, setFormData] = useState({
@@ -123,29 +123,15 @@ export default function Register() {
     setErrors({});
 
     try {
-      // TODO: 替换为真实的后端注册API
-      const res = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-          username: formData.name || undefined
-        })
-      });
+      // 直接使用 Supabase 注册
+      const { error } = await signUpWithEmail(formData.email, formData.password);
 
-      const data = await res.json();
-
-      if (!res.ok || data.error) {
-        setErrors({ general: data.error || '注册失败，请稍后重试' });
-      } else if (data.session?.access_token && data.user) {
-        // 注册成功，自动登录
-        login(data.session.access_token, data.user);
-
-        // 跳转到dashboard
-        router.push('/dashboard');
+      if (error) {
+        setErrors({ general: error.message || '注册失败，请稍后重试' });
       } else {
-        setErrors({ general: '注册响应格式错误' });
+        // 注册成功，显示提示并跳转到登录
+        alert('注册成功！请检查您的邮箱并验证账号。');
+        router.push('/login');
       }
     } catch (error) {
       console.error('注册错误:', error);
@@ -158,9 +144,24 @@ export default function Register() {
   /**
    * 处理第三方注册
    */
-  const handleSocialRegister = (provider: string) => {
-    console.log(`使用 ${provider} 注册`);
-    // 这里将来会实现真实的第三方注册
+  const handleSocialRegister = async (provider: 'google' | 'azure') => {
+    setIsLoading(true);
+    setErrors({});
+
+    try {
+      // 直接使用 Supabase OAuth
+      const { error } = await signInWithOAuth(provider);
+
+      if (error) {
+        setErrors({ general: error.message || `${provider} 注册失败` });
+        setIsLoading(false);
+      }
+      // 成功会自动跳转到 OAuth 页面
+    } catch (error) {
+      console.error('OAuth 注册错误:', error);
+      setErrors({ general: '网络错误，请稍后重试' });
+      setIsLoading(false);
+    }
   };
 
   const passwordStrength = getPasswordStrength(formData.password);
@@ -417,7 +418,7 @@ export default function Register() {
           {/* 第三方注册 */}
           <div className="mt-6 grid grid-cols-2 gap-3">
             <button
-              onClick={() => handleSocialRegister('Google')}
+              onClick={() => handleSocialRegister('google')}
               className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -430,7 +431,7 @@ export default function Register() {
             </button>
 
             <button
-              onClick={() => handleSocialRegister('GitHub')}
+              onClick={() => handleSocialRegister('azure')}
               className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
             >
               <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">

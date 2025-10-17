@@ -1,23 +1,26 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database';
 
-// 从环境变量获取 Supabase 配置（服务端专用）
-const supabaseUrl = process.env.SUPABASE_URL!;
+/**
+ * Supabase 服务端客户端
+ * 使用 Service Role Key，拥有完整权限，绕过 RLS
+ *
+ * ⚠️ 仅在服务端使用（API Routes、Server Components）
+ * ❌ 绝对不要在客户端组件中导入此文件！
+ *
+ * 用途：
+ * - 后端 API 路由中需要绕过 RLS 的操作
+ * - 管理员操作
+ * - 系统级任务
+ */
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 if (!supabaseUrl || !supabaseServiceKey) {
-  throw new Error('Missing Supabase server environment variables');
+  throw new Error('Missing Supabase server environment variables (NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY)');
 }
 
-/**
- * Supabase 服务端客户端实例
- * 使用 service_role key，拥有完整权限
- * 仅在服务端（API Routes、Server Components）使用
- *
- * 注意：此客户端用于数据库操作，用户身份验证通过 jwt-verify.ts 中的 JWT 验证完成
- *
- * ⚠️ 警告：不要在客户端组件中导入此文件！
- */
 export const supabaseServer = createClient<Database>(
   supabaseUrl,
   supabaseServiceKey,

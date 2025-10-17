@@ -11,7 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
  */
 export default function Header() {
   const pathname = usePathname();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, signOut } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [language, setLanguage] = useState('zh');
@@ -42,7 +42,7 @@ export default function Header() {
    * 处理登出
    */
   const handleLogout = () => {
-    logout();
+    signOut();
     setIsMenuOpen(false);
     setIsUserMenuOpen(false);
   };
@@ -56,7 +56,7 @@ export default function Header() {
 
   // 获取用户名首字母
   const getUserInitial = () => {
-    return user?.username?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U';
+    return user?.user_metadata?.username?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U';
   };
 
   // 点击外部关闭下拉菜单
@@ -170,7 +170,7 @@ export default function Header() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-semibold text-gray-900 truncate">
-                            {user?.username || '用户'}
+                            {user?.user_metadata?.username || '用户'}
                           </p>
                           <p className="text-xs text-gray-500 truncate">
                             {user?.email}
@@ -341,7 +341,7 @@ export default function Header() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-semibold text-gray-900 truncate">
-                            {user?.username || '用户'}
+                            {user?.user_metadata?.username || '用户'}
                           </p>
                           <p className="text-xs text-gray-500 truncate">
                             {user?.email}
