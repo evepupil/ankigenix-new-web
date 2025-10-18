@@ -56,7 +56,29 @@ export default function Header() {
 
   // 获取用户名首字母
   const getUserInitial = () => {
-    return user?.user_metadata?.username?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U';
+    const displayName = getUserDisplayName();
+    return displayName.charAt(0).toUpperCase();
+  };
+
+  // 获取用户显示名称
+  const getUserDisplayName = () => {
+    // 优先级：full_name > name > username > email前缀
+    return (
+      user?.user_metadata?.full_name ||
+      user?.user_metadata?.name ||
+      user?.user_metadata?.username ||
+      user?.email?.split('@')[0] ||
+      '用户'
+    );
+  };
+
+  // 获取用户头像URL
+  const getUserAvatar = () => {
+    return (
+      user?.user_metadata?.avatar_url ||
+      user?.user_metadata?.picture ||
+      null
+    );
   };
 
   // 点击外部关闭下拉菜单
@@ -154,9 +176,17 @@ export default function Header() {
                   onClick={toggleUserMenu}
                   className="flex items-center space-x-2 focus:outline-none group"
                 >
-                  <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-blue-700 rounded-full flex items-center justify-center shadow-sm group-hover:shadow-md transition-all cursor-pointer">
-                    <span className="text-sm font-semibold text-white">{getUserInitial()}</span>
-                  </div>
+                  {getUserAvatar() ? (
+                    <img
+                      src={getUserAvatar()!}
+                      alt="用户头像"
+                      className="w-9 h-9 rounded-full shadow-sm group-hover:shadow-md transition-all cursor-pointer object-cover"
+                    />
+                  ) : (
+                    <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-blue-700 rounded-full flex items-center justify-center shadow-sm group-hover:shadow-md transition-all cursor-pointer">
+                      <span className="text-sm font-semibold text-white">{getUserInitial()}</span>
+                    </div>
+                  )}
                 </button>
 
                 {/* 下拉菜单 */}
@@ -165,12 +195,20 @@ export default function Header() {
                     {/* 用户信息 */}
                     <div className="px-4 py-3 border-b border-gray-200">
                       <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-full flex items-center justify-center shadow-sm">
-                          <span className="text-base font-bold text-white">{getUserInitial()}</span>
-                        </div>
+                        {getUserAvatar() ? (
+                          <img
+                            src={getUserAvatar()!}
+                            alt="用户头像"
+                            className="w-10 h-10 rounded-full shadow-sm object-cover"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-full flex items-center justify-center shadow-sm">
+                            <span className="text-base font-bold text-white">{getUserInitial()}</span>
+                          </div>
+                        )}
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-semibold text-gray-900 truncate">
-                            {user?.user_metadata?.username || '用户'}
+                            {getUserDisplayName()}
                           </p>
                           <p className="text-xs text-gray-500 truncate">
                             {user?.email}
@@ -336,12 +374,20 @@ export default function Header() {
                     {/* 用户信息卡片 */}
                     <div className="px-4 py-3 bg-gray-50 rounded-lg">
                       <div className="flex items-center space-x-3 mb-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-full flex items-center justify-center shadow-sm">
-                          <span className="text-base font-bold text-white">{getUserInitial()}</span>
-                        </div>
+                        {getUserAvatar() ? (
+                          <img
+                            src={getUserAvatar()!}
+                            alt="用户头像"
+                            className="w-10 h-10 rounded-full shadow-sm object-cover"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-full flex items-center justify-center shadow-sm">
+                            <span className="text-base font-bold text-white">{getUserInitial()}</span>
+                          </div>
+                        )}
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-semibold text-gray-900 truncate">
-                            {user?.user_metadata?.username || '用户'}
+                            {getUserDisplayName()}
                           </p>
                           <p className="text-xs text-gray-500 truncate">
                             {user?.email}

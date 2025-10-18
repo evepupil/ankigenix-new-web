@@ -125,7 +125,7 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4">多种输入方式</h3>
               <p className="text-gray-600">
-                支持文本、文件、URL、视频等多种输入方式，轻松导入学习材料
+                支持文本、文件、网页、主题等多种输入方式，轻松导入学习材料生成高质量闪卡
               </p>
             </div>
 
@@ -138,7 +138,7 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4">AI智能生成</h3>
               <p className="text-gray-600">
-                基于先进的AI算法，自动生成高质量的问答卡片，提升学习效果
+                基于先进的AI大模型，自动生成高质量的问答卡片，提升学习效果
               </p>
             </div>
 
@@ -271,7 +271,7 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4">输入学习材料</h3>
               <p className="text-gray-600">
-                支持文本、文件、URL或视频链接，选择最适合你的输入方式
+                支持文本、文件、网页或主题，选择最适合你的输入方式
               </p>
             </div>
 
