@@ -14,8 +14,10 @@ export default function Header() {
   const { user, isAuthenticated, signOut } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
   const [language, setLanguage] = useState('zh');
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const langMenuRef = useRef<HTMLDivElement>(null);
 
   /**
    * 切换移动端菜单显示状态
@@ -32,10 +34,31 @@ export default function Header() {
   };
 
   /**
+   * 切换语言菜单
+   */
+  const toggleLangMenu = () => {
+    setIsLangMenuOpen(!isLangMenuOpen);
+  };
+
+  /**
    * 切换语言设置
    */
-  const toggleLanguage = () => {
-    setLanguage(language === 'zh' ? 'en' : 'zh');
+  const changeLanguage = (lang: string) => {
+    setLanguage(lang);
+    setIsLangMenuOpen(false);
+    // TODO: 实际的国际化逻辑
+  };
+
+  /**
+   * 获取语言显示信息
+   */
+  const getLanguageInfo = (lang: string) => {
+    const languages: { [key: string]: { name: string; flag: string } } = {
+      zh: { name: '简体中文', flag: '🇨🇳' },
+      en: { name: 'English', flag: '🇺🇸' },
+      ja: { name: '日本語', flag: '🇯🇵' },
+    };
+    return languages[lang] || languages['zh'];
   };
 
   /**
@@ -87,16 +110,19 @@ export default function Header() {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
         setIsUserMenuOpen(false);
       }
+      if (langMenuRef.current && !langMenuRef.current.contains(event.target as Node)) {
+        setIsLangMenuOpen(false);
+      }
     };
 
-    if (isUserMenuOpen) {
+    if (isUserMenuOpen || isLangMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isUserMenuOpen]);
+  }, [isUserMenuOpen, isLangMenuOpen]);
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50 backdrop-blur-sm bg-opacity-95">
@@ -153,13 +179,56 @@ export default function Header() {
 
           {/* 右侧工具栏 - 极简设计 */}
           <div className="hidden md:flex items-center space-x-3">
-            {/* 语言切换 */}
-            <button
-              onClick={toggleLanguage}
-              className="px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-all"
-            >
-              {language === 'zh' ? '中文' : 'EN'}
-            </button>
+            {/* 语言切换下拉菜单 */}
+            <div className="relative" ref={langMenuRef}>
+              <button
+                onClick={toggleLangMenu}
+                className="flex items-center space-x-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-all"
+              >
+                <span>{getLanguageInfo(language).flag}</span>
+                <span>{language === 'zh' ? '中文' : language === 'en' ? 'EN' : '日本語'}</span>
+                <svg
+                  className={`w-4 h-4 transition-transform ${isLangMenuOpen ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {/* 语言下拉菜单 */}
+              {isLangMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50 animate-slide-in">
+                  {['zh', 'en', 'ja'].map((lang) => {
+                    const langInfo = getLanguageInfo(lang);
+                    return (
+                      <button
+                        key={lang}
+                        onClick={() => changeLanguage(lang)}
+                        className={`flex items-center w-full px-4 py-2.5 text-sm transition-colors ${
+                          language === lang
+                            ? 'bg-blue-50 text-blue-600 font-medium'
+                            : 'text-gray-700 hover:bg-gray-50'
+                        }`}
+                      >
+                        <span className="mr-3 text-lg">{langInfo.flag}</span>
+                        <span className="flex-1 text-left">{langInfo.name}</span>
+                        {language === lang && (
+                          <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                              fillRule="evenodd"
+                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
 
             {/* 登录状态 - 仅显示头像 */}
             {isAuthenticated ? (
@@ -342,13 +411,28 @@ export default function Header() {
 
               {/* 移动端工具栏 */}
               <div className="pt-4 mt-4 border-t border-gray-200 space-y-3">
-                <div className="flex items-center justify-between px-1">
-                  <button
-                    onClick={toggleLanguage}
-                    className="px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-all"
-                  >
-                    {language === 'zh' ? '中文' : 'EN'}
-                  </button>
+                {/* 移动端语言选择 */}
+                <div className="px-1">
+                  <label className="block text-xs font-medium text-gray-500 mb-2 px-1">语言 / Language</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {['zh', 'en', 'ja'].map((lang) => {
+                      const langInfo = getLanguageInfo(lang);
+                      return (
+                        <button
+                          key={lang}
+                          onClick={() => changeLanguage(lang)}
+                          className={`flex flex-col items-center justify-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                            language === lang
+                              ? 'bg-blue-600 text-white shadow-sm'
+                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          }`}
+                        >
+                          <span className="text-xl mb-1">{langInfo.flag}</span>
+                          <span className="text-xs">{lang === 'zh' ? '中文' : lang === 'en' ? 'EN' : '日本語'}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 {isAuthenticated ? (
