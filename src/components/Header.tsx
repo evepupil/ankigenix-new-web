@@ -200,7 +200,7 @@ export default function Header() {
               {/* 语言下拉菜单 */}
               {isLangMenuOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50 animate-slide-in">
-                  {['zh', 'en', 'ja'].map((lang) => {
+                  {(['zh', 'en', 'ja'] as const).map((lang) => {
                     const langInfo = getLanguageInfo(lang);
                     return (
                       <button
@@ -415,12 +415,12 @@ export default function Header() {
                 <div className="px-1">
                   <label className="block text-xs font-medium text-gray-500 mb-2 px-1">{t('common.language')}</label>
                   <div className="grid grid-cols-3 gap-2">
-                    {['zh', 'en', 'ja'].map((lang) => {
+                    {(['zh', 'en', 'ja'] as const).map((lang) => {
                       const langInfo = getLanguageInfo(lang);
                       return (
                         <button
                           key={lang}
-                          onClick={() => changeLanguage(lang as 'zh' | 'en' | 'ja')}
+                          onClick={() => changeLanguage(lang)}
                           className={`flex flex-col items-center justify-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
                             locale === lang
                               ? 'bg-blue-600 text-white shadow-sm'
