@@ -118,6 +118,62 @@ function DashboardPage() {
   };
 
   /**
+   * 验证URL是否安全（防止文件路径和非HTTP协议）
+   */
+  const validateUrl = (url: string): { valid: boolean; error?: string } => {
+    const trimmedUrl = url.trim();
+
+    // 检查是否为空
+    if (!trimmedUrl) {
+      return { valid: false, error: '请输入网页链接' };
+    }
+
+    // 检查是否包含文件路径特征（Windows和Unix风格）
+    const filePathPatterns = [
+      /^[a-zA-Z]:\\/,  // Windows绝对路径 (C:\, D:\, etc.)
+      /^\/[a-zA-Z]/,   // Unix绝对路径 (/home, /usr, etc.)
+      /^\.\//,         // 相对路径 (./)
+      /^\.\.\//,       // 父目录路径 (../)
+      /^~\//,          // Unix home目录 (~/)
+    ];
+
+    for (const pattern of filePathPatterns) {
+      if (pattern.test(trimmedUrl)) {
+        return { valid: false, error: '不支持文件路径，请输入有效的网页链接（http://或https://）' };
+      }
+    }
+
+    // 检查是否使用file://协议
+    if (trimmedUrl.toLowerCase().startsWith('file://')) {
+      return { valid: false, error: '不支持file://协议，请输入有效的网页链接（http://或https://）' };
+    }
+
+    // 检查是否以http://或https://开头
+    if (!trimmedUrl.toLowerCase().startsWith('http://') && !trimmedUrl.toLowerCase().startsWith('https://')) {
+      return { valid: false, error: '请输入完整的网页链接，必须以http://或https://开头' };
+    }
+
+    // 尝试解析URL
+    try {
+      const urlObj = new URL(trimmedUrl);
+
+      // 检查协议是否为http或https
+      if (urlObj.protocol !== 'http:' && urlObj.protocol !== 'https:') {
+        return { valid: false, error: '仅支持HTTP和HTTPS协议' };
+      }
+
+      // 检查是否有主机名
+      if (!urlObj.hostname) {
+        return { valid: false, error: '无效的网页链接格式' };
+      }
+
+      return { valid: true };
+    } catch (e) {
+      return { valid: false, error: '无效的网页链接格式，请检查输入' };
+    }
+  };
+
+  /**
    * 处理生成闪卡的操作
    */
   const handleGenerateCards = async () => {
@@ -134,9 +190,18 @@ function DashboardPage() {
       return;
     }
 
-    if (activeTab === 'url' && !urlInput.trim()) {
-      showToast('warning', t('dashboard.messages.urlRequired'), t('dashboard.messages.urlHint'));
-      return;
+    if (activeTab === 'url') {
+      if (!urlInput.trim()) {
+        showToast('warning', t('dashboard.messages.urlRequired'), t('dashboard.messages.urlHint'));
+        return;
+      }
+
+      // URL安全校验
+      const urlValidation = validateUrl(urlInput);
+      if (!urlValidation.valid) {
+        showToast('error', 'URL格式错误', urlValidation.error || '请输入有效的网页链接');
+        return;
+      }
     }
 
     if (activeTab === 'topic' && !topicInput.trim()) {
@@ -150,6 +215,11 @@ function DashboardPage() {
     let taskId: string | null = null;
     try {
       const token = localStorage.getItem('auth_token');
+
+      // 将前端的activeTab映射到后端期望的task_type
+      // 前端: 'url' -> 后端: 'web'
+      const taskType = activeTab === 'url' ? 'web' : activeTab;
+
       const taskResponse = await fetch('/api/tasks/create', {
         method: 'POST',
         headers: {
@@ -157,7 +227,7 @@ function DashboardPage() {
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
-          task_type: activeTab,
+          task_type: taskType,
           workflow_type: activeTab === 'file' ? 'extract_catalog' : 'direct_generate',
           input_data: {
             text: activeTab === 'text' ? textInput : undefined,
