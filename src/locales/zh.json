@@ -126,43 +126,169 @@
       "topicFeatureHint": "主题生成功能即将上线"
     },
     "taskHistory": {
-      "title": "任务历史",
-      "empty": "暂无任务记录",
-      "loading": "加载中..."
+      "title": "生成历史",
+      "empty": "暂无生成记录",
+      "emptyHint": "开始创建您的第一个闪卡集吧！",
+      "loading": "加载中...",
+      "totalTasks": "共 {count} 个任务",
+      "status": {
+        "processing": "处理中",
+        "aiProcessing": "AI处理中",
+        "fileUploading": "文件上传中",
+        "generatingCatalog": "生成大纲中",
+        "catalogReady": "大纲已完成",
+        "generatingCards": "生成闪卡中",
+        "completed": "已完成",
+        "failed": "失败"
+      },
+      "inputType": {
+        "text": "文本输入",
+        "file": "文件上传",
+        "web": "网页链接",
+        "topic": "主题生成"
+      },
+      "taskTitle": {
+        "text": "文本生成",
+        "web": "网页生成",
+        "topic": "主题生成",
+        "unknown": "未知任务"
+      },
+      "actions": {
+        "preview": "预览",
+        "download": "下载",
+        "selectChapters": "选择章节",
+        "retry": "重试",
+        "processing": "处理中..."
+      },
+      "labels": {
+        "createTime": "创建时间",
+        "completeTime": "完成时间",
+        "cardCount": "卡片数量"
+      }
     }
   },
   "features": {
     "hero": {
-      "title": "功能特性",
-      "subtitle": "了解AnkiGenix如何帮助你高效学习"
+      "title": "AI驱动的闪卡生成工具",
+      "subtitle": "AnkiGenix利用AI技术，帮助您快速将学习材料转换为高质量的Anki闪卡，大幅提升学习效率"
     },
     "coreFeatures": {
       "title": "核心功能",
+      "subtitle": "四大核心功能，全面提升您的学习效率",
       "aiGeneration": {
         "title": "AI智能生成",
-        "description": "利用AI技术自动分析学习材料，快速生成结构化的Anki闪卡"
+        "description": "利用AI技术自动分析学习材料，快速生成结构化的Anki闪卡",
+        "details": [
+          "智能提取文本中的关键知识点",
+          "自动生成问答格式的闪卡内容",
+          "支持批量处理大量学习材料",
+          "生成符合Anki标准格式的卡片"
+        ]
       },
-      "multiFormat": {
-        "title": "多格式支持",
-        "description": "支持文本、PDF、Word、网页等多种输入格式"
+      "multiInput": {
+        "title": "多种输入方式",
+        "description": "灵活的内容输入方式，适应不同的学习材料来源",
+        "details": [
+          "直接粘贴文本内容生成",
+          "上传PDF、Word等文档文件",
+          "输入网页URL自动抓取内容",
+          "输入主题关键词智能扩展"
+        ]
       },
       "export": {
-        "title": "灵活导出",
-        "description": "支持导出为Anki标准格式和CSV格式"
+        "title": "一键导出",
+        "description": "生成的闪卡可直接导出为Anki格式，无缝衔接学习流程",
+        "details": [
+          "导出标准.apkg格式文件",
+          "支持自定义卡组名称",
+          "可选择导出部分或全部卡片",
+          "兼容Anki桌面版和移动版"
+        ]
       },
       "efficiency": {
-        "title": "高效学习",
-        "description": "科学的记忆算法，帮助你更好地记忆和复习"
+        "title": "高效便捷",
+        "description": "大幅减少手动制卡时间，让学习更专注于记忆和理解",
+        "details": [
+          "几分钟完成数十张闪卡制作",
+          "实时预览生成的卡片内容",
+          "支持在线编辑和调整",
+          "简洁直观的操作界面"
+        ]
       }
     },
     "advancedFeatures": {
-      "title": "高级功能"
+      "title": "更多特性",
+      "subtitle": "丰富的功能特性，提升学习体验",
+      "contentExtraction": {
+        "title": "智能内容提取",
+        "description": "从各类文档中准确提取学习内容"
+      },
+      "multiDiscipline": {
+        "title": "多学科适用",
+        "description": "适用于语言、历史、科学等各类学科"
+      },
+      "taskManagement": {
+        "title": "任务管理",
+        "description": "查看历史生成记录，管理学习材料"
+      },
+      "dataSecurity": {
+        "title": "数据安全",
+        "description": "用户数据加密存储，保护隐私安全"
+      },
+      "responsive": {
+        "title": "响应式设计",
+        "description": "完美适配桌面和移动设备浏览器"
+      },
+      "batchEdit": {
+        "title": "批量编辑",
+        "description": "支持批量删除、恢复闪卡操作"
+      }
     },
     "useCases": {
-      "title": "使用场景"
+      "title": "使用场景",
+      "subtitle": "适用于各种学习场景，满足不同用户需求",
+      "examPrep": {
+        "title": "考试备考",
+        "description": "快速将教材、讲义转换为闪卡，系统化复习",
+        "example": "上传课程PDF，自动生成知识点问答卡片"
+      },
+      "language": {
+        "title": "语言学习",
+        "description": "制作单词、短语卡片，加速词汇积累",
+        "example": "粘贴英文文章，提取生词并生成双语卡片"
+      },
+      "certification": {
+        "title": "职业认证",
+        "description": "整理专业考试资料，提高记忆效率",
+        "example": "将培训文档转换为重点知识闪卡"
+      },
+      "knowledge": {
+        "title": "知识管理",
+        "description": "构建个人知识库，长期积累学习成果",
+        "example": "从阅读材料中提取关键概念，建立知识体系"
+      },
+      "exampleLabel": "示例："
     },
     "technicalAdvantages": {
-      "title": "技术优势"
+      "title": "为什么选择AnkiGenix",
+      "easyToUse": {
+        "title": "简单易用",
+        "description": "三步完成闪卡生成"
+      },
+      "efficient": {
+        "title": "高效准确",
+        "description": "AI智能提取知识点"
+      },
+      "compatible": {
+        "title": "完全兼容",
+        "description": "支持Anki标准格式"
+      }
+    },
+    "cta": {
+      "title": "开始使用AnkiGenix",
+      "subtitle": "立即体验AI驱动的闪卡生成，让学习更高效",
+      "register": "免费注册",
+      "dashboard": "进入控制台"
     }
   }
 }

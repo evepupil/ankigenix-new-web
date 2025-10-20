@@ -126,43 +126,169 @@
       "topicFeatureHint": "Topic generation feature coming soon"
     },
     "taskHistory": {
-      "title": "Task History",
-      "empty": "No task records",
-      "loading": "Loading..."
+      "title": "Generation History",
+      "empty": "No generation records",
+      "emptyHint": "Start creating your first flashcard set!",
+      "loading": "Loading...",
+      "totalTasks": "{count} tasks in total",
+      "status": {
+        "processing": "Processing",
+        "aiProcessing": "AI Processing",
+        "fileUploading": "Uploading File",
+        "generatingCatalog": "Generating Catalog",
+        "catalogReady": "Catalog Ready",
+        "generatingCards": "Generating Cards",
+        "completed": "Completed",
+        "failed": "Failed"
+      },
+      "inputType": {
+        "text": "Text Input",
+        "file": "File Upload",
+        "web": "Web Link",
+        "topic": "Topic Generation"
+      },
+      "taskTitle": {
+        "text": "Text Generation",
+        "web": "Web Generation",
+        "topic": "Topic Generation",
+        "unknown": "Unknown Task"
+      },
+      "actions": {
+        "preview": "Preview",
+        "download": "Download",
+        "selectChapters": "Select Chapters",
+        "retry": "Retry",
+        "processing": "Processing..."
+      },
+      "labels": {
+        "createTime": "Created",
+        "completeTime": "Completed",
+        "cardCount": "Cards"
+      }
     }
   },
   "features": {
     "hero": {
-      "title": "Features",
-      "subtitle": "Learn how AnkiGenix helps you study efficiently"
+      "title": "AI-Powered Flashcard Generation Tool",
+      "subtitle": "AnkiGenix uses AI technology to help you quickly convert learning materials into high-quality Anki flashcards, significantly improving learning efficiency"
     },
     "coreFeatures": {
       "title": "Core Features",
+      "subtitle": "Four core features to comprehensively enhance your learning efficiency",
       "aiGeneration": {
         "title": "AI Smart Generation",
-        "description": "Use AI technology to automatically analyze learning materials and quickly generate structured Anki flashcards"
+        "description": "Use AI technology to automatically analyze learning materials and quickly generate structured Anki flashcards",
+        "details": [
+          "Intelligently extract key knowledge points from text",
+          "Automatically generate Q&A format flashcard content",
+          "Support batch processing of large amounts of learning materials",
+          "Generate cards in Anki standard format"
+        ]
       },
-      "multiFormat": {
-        "title": "Multi-Format Support",
-        "description": "Supports text, PDF, Word, web pages, and other input formats"
+      "multiInput": {
+        "title": "Multiple Input Methods",
+        "description": "Flexible content input methods to adapt to different learning material sources",
+        "details": [
+          "Paste text content directly",
+          "Upload PDF, Word and other document files",
+          "Enter web URL to automatically crawl content",
+          "Enter topic keywords for intelligent expansion"
+        ]
       },
       "export": {
-        "title": "Flexible Export",
-        "description": "Export to Anki standard format and CSV format"
+        "title": "One-Click Export",
+        "description": "Generated flashcards can be directly exported to Anki format for seamless learning workflow",
+        "details": [
+          "Export standard .apkg format files",
+          "Support custom deck names",
+          "Choose to export part or all cards",
+          "Compatible with Anki desktop and mobile"
+        ]
       },
       "efficiency": {
-        "title": "Efficient Learning",
-        "description": "Scientific memory algorithm helps you memorize and review better"
+        "title": "Efficient and Convenient",
+        "description": "Significantly reduce manual card making time and let learning focus on memory and understanding",
+        "details": [
+          "Complete dozens of flashcards in minutes",
+          "Real-time preview of generated card content",
+          "Support online editing and adjustment",
+          "Simple and intuitive interface"
+        ]
       }
     },
     "advancedFeatures": {
-      "title": "Advanced Features"
+      "title": "More Features",
+      "subtitle": "Rich features to enhance learning experience",
+      "contentExtraction": {
+        "title": "Smart Content Extraction",
+        "description": "Accurately extract learning content from various documents"
+      },
+      "multiDiscipline": {
+        "title": "Multi-Discipline",
+        "description": "Applicable to languages, history, science and other disciplines"
+      },
+      "taskManagement": {
+        "title": "Task Management",
+        "description": "View historical generation records and manage learning materials"
+      },
+      "dataSecurity": {
+        "title": "Data Security",
+        "description": "User data encrypted storage to protect privacy"
+      },
+      "responsive": {
+        "title": "Responsive Design",
+        "description": "Perfectly adapted to desktop and mobile browsers"
+      },
+      "batchEdit": {
+        "title": "Batch Editing",
+        "description": "Support batch delete and restore flashcard operations"
+      }
     },
     "useCases": {
-      "title": "Use Cases"
+      "title": "Use Cases",
+      "subtitle": "Applicable to various learning scenarios to meet different user needs",
+      "examPrep": {
+        "title": "Exam Preparation",
+        "description": "Quickly convert textbooks and lecture notes into flashcards for systematic review",
+        "example": "Upload course PDF to automatically generate knowledge point Q&A cards"
+      },
+      "language": {
+        "title": "Language Learning",
+        "description": "Create word and phrase cards to accelerate vocabulary accumulation",
+        "example": "Paste English articles to extract new words and generate bilingual cards"
+      },
+      "certification": {
+        "title": "Professional Certification",
+        "description": "Organize professional exam materials to improve memory efficiency",
+        "example": "Convert training documents into key knowledge flashcards"
+      },
+      "knowledge": {
+        "title": "Knowledge Management",
+        "description": "Build personal knowledge base for long-term learning accumulation",
+        "example": "Extract key concepts from reading materials to establish knowledge system"
+      },
+      "exampleLabel": "Example: "
     },
     "technicalAdvantages": {
-      "title": "Technical Advantages"
+      "title": "Why Choose AnkiGenix",
+      "easyToUse": {
+        "title": "Easy to Use",
+        "description": "Complete flashcard generation in three steps"
+      },
+      "efficient": {
+        "title": "Efficient and Accurate",
+        "description": "AI intelligently extracts knowledge points"
+      },
+      "compatible": {
+        "title": "Fully Compatible",
+        "description": "Support Anki standard format"
+      }
+    },
+    "cta": {
+      "title": "Get Started with AnkiGenix",
+      "subtitle": "Experience AI-powered flashcard generation now for more efficient learning",
+      "register": "Free Sign Up",
+      "dashboard": "Go to Dashboard"
     }
   }
 }

@@ -126,43 +126,169 @@
       "topicFeatureHint": "トピック生成機能は近日公開予定"
     },
     "taskHistory": {
-      "title": "タスク履歴",
-      "empty": "タスク記録がありません",
-      "loading": "読み込み中..."
+      "title": "生成履歴",
+      "empty": "生成記録がありません",
+      "emptyHint": "最初のフラッシュカードセットを作成しましょう！",
+      "loading": "読み込み中...",
+      "totalTasks": "合計 {count} 件のタスク",
+      "status": {
+        "processing": "処理中",
+        "aiProcessing": "AI処理中",
+        "fileUploading": "ファイルアップロード中",
+        "generatingCatalog": "アウトライン生成中",
+        "catalogReady": "アウトライン完成",
+        "generatingCards": "フラッシュカード生成中",
+        "completed": "完了",
+        "failed": "失敗"
+      },
+      "inputType": {
+        "text": "テキスト入力",
+        "file": "ファイルアップロード",
+        "web": "Webリンク",
+        "topic": "トピック生成"
+      },
+      "taskTitle": {
+        "text": "テキスト生成",
+        "web": "Web生成",
+        "topic": "トピック生成",
+        "unknown": "不明なタスク"
+      },
+      "actions": {
+        "preview": "プレビュー",
+        "download": "ダウンロード",
+        "selectChapters": "チャプター選択",
+        "retry": "再試行",
+        "processing": "処理中..."
+      },
+      "labels": {
+        "createTime": "作成日時",
+        "completeTime": "完了日時",
+        "cardCount": "カード数"
+      }
     }
   },
   "features": {
     "hero": {
-      "title": "機能",
-      "subtitle": "AnkiGenixがどのように効率的な学習をサポートするかを学ぶ"
+      "title": "AI搭載フラッシュカード生成ツール",
+      "subtitle": "AnkiGenixはAI技術を使用して、学習資料を高品質なAnkiフラッシュカードに素早く変換し、学習効率を大幅に向上させます"
     },
     "coreFeatures": {
       "title": "コア機能",
+      "subtitle": "4つのコア機能で学習効率を総合的に向上",
       "aiGeneration": {
         "title": "AIスマート生成",
-        "description": "AI技術を使用して学習資料を自動的に分析し、構造化されたAnkiフラッシュカードを迅速に生成"
+        "description": "AI技術を使用して学習資料を自動的に分析し、構造化されたAnkiフラッシュカードを迅速に生成",
+        "details": [
+          "テキストから重要な知識ポイントを抽出",
+          "Q&A形式のフラッシュカードコンテンツを自動生成",
+          "大量の学習資料のバッチ処理をサポート",
+          "Anki標準形式のカードを生成"
+        ]
       },
-      "multiFormat": {
-        "title": "多形式対応",
-        "description": "テキスト、PDF、Word、Webページなど、さまざまな入力形式をサポート"
+      "multiInput": {
+        "title": "複数の入力方法",
+        "description": "さまざまな学習資料ソースに適応する柔軟なコンテンツ入力方法",
+        "details": [
+          "テキストコンテンツを直接貼り付け",
+          "PDF、Wordなどのドキュメントファイルをアップロード",
+          "WebのURLを入力してコンテンツを自動クロール",
+          "トピックキーワードを入力してインテリジェント拡張"
+        ]
       },
       "export": {
-        "title": "柔軟なエクスポート",
-        "description": "Anki標準形式とCSV形式へのエクスポートをサポート"
+        "title": "ワンクリックエクスポート",
+        "description": "生成されたフラッシュカードをAnki形式に直接エクスポートして、シームレスな学習ワークフローを実現",
+        "details": [
+          "標準.apkg形式ファイルのエクスポート",
+          "カスタムデッキ名をサポート",
+          "一部または全部のカードをエクスポート可能",
+          "Ankiデスクトップ版とモバイル版に対応"
+        ]
       },
       "efficiency": {
-        "title": "効率的な学習",
-        "description": "科学的な記憶アルゴリズムで、より良い記憶と復習をサポート"
+        "title": "効率的で便利",
+        "description": "手動カード作成時間を大幅に削減し、学習を記憶と理解に集中",
+        "details": [
+          "数分で数十枚のフラッシュカードを完成",
+          "生成されたカードコンテンツのリアルタイムプレビュー",
+          "オンライン編集と調整をサポート",
+          "シンプルで直感的なインターフェース"
+        ]
       }
     },
     "advancedFeatures": {
-      "title": "高度な機能"
+      "title": "その他の機能",
+      "subtitle": "豊富な機能で学習体験を向上",
+      "contentExtraction": {
+        "title": "スマートコンテンツ抽出",
+        "description": "さまざまなドキュメントから学習コンテンツを正確に抽出"
+      },
+      "multiDiscipline": {
+        "title": "多分野対応",
+        "description": "言語、歴史、科学など、さまざまな分野に適用"
+      },
+      "taskManagement": {
+        "title": "タスク管理",
+        "description": "履歴生成記録を表示し、学習資料を管理"
+      },
+      "dataSecurity": {
+        "title": "データセキュリティ",
+        "description": "ユーザーデータの暗号化保存でプライバシーを保護"
+      },
+      "responsive": {
+        "title": "レスポンシブデザイン",
+        "description": "デスクトップとモバイルブラウザに完全対応"
+      },
+      "batchEdit": {
+        "title": "バッチ編集",
+        "description": "フラッシュカードのバッチ削除と復元操作をサポート"
+      }
     },
     "useCases": {
-      "title": "使用例"
+      "title": "使用例",
+      "subtitle": "さまざまな学習シナリオに適用し、さまざまなユーザーニーズを満たす",
+      "examPrep": {
+        "title": "試験準備",
+        "description": "教科書や講義ノートをフラッシュカードに素早く変換して体系的な復習",
+        "example": "コースPDFをアップロードして知識ポイントQ&Aカードを自動生成"
+      },
+      "language": {
+        "title": "語学学習",
+        "description": "単語とフレーズのカードを作成して語彙蓄積を加速",
+        "example": "英語の記事を貼り付けて新しい単語を抽出しバイリンガルカードを生成"
+      },
+      "certification": {
+        "title": "専門資格",
+        "description": "専門試験資料を整理して記憶効率を向上",
+        "example": "トレーニングドキュメントを重要知識フラッシュカードに変換"
+      },
+      "knowledge": {
+        "title": "知識管理",
+        "description": "個人の知識ベースを構築して長期的な学習蓄積",
+        "example": "読書資料から重要な概念を抽出して知識体系を構築"
+      },
+      "exampleLabel": "例："
     },
     "technicalAdvantages": {
-      "title": "技術的優位性"
+      "title": "AnkiGenixを選ぶ理由",
+      "easyToUse": {
+        "title": "使いやすい",
+        "description": "3ステップでフラッシュカード生成完了"
+      },
+      "efficient": {
+        "title": "効率的で正確",
+        "description": "AIが知識ポイントをインテリジェントに抽出"
+      },
+      "compatible": {
+        "title": "完全互換",
+        "description": "Anki標準形式をサポート"
+      }
+    },
+    "cta": {
+      "title": "AnkiGenixを始めよう",
+      "subtitle": "AI搭載のフラッシュカード生成を今すぐ体験して、より効率的な学習を",
+      "register": "無料登録",
+      "dashboard": "ダッシュボードへ"
     }
   }
 }
