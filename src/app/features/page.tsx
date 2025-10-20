@@ -27,45 +27,45 @@ export default function Features() {
     {
       icon: SparklesIcon,
       title: 'AI智能生成',
-      description: '基于先进的AI技术，自动分析学习内容，生成高质量的Anki闪卡',
+      description: '利用AI技术自动分析学习材料，快速生成结构化的Anki闪卡',
       details: [
-        '智能内容分析和关键点提取',
-        '自动生成问答对和填空题',
-        '支持多种题型和难度调节',
-        '持续学习优化生成质量'
+        '智能提取文本中的关键知识点',
+        '自动生成问答格式的闪卡内容',
+        '支持批量处理大量学习材料',
+        '生成符合Anki标准格式的卡片'
       ]
     },
     {
       icon: DocumentTextIcon,
       title: '多种输入方式',
-      description: '支持文本、文件、网页链接等多种输入方式，满足不同学习场景',
+      description: '灵活的内容输入方式，适应不同的学习材料来源',
       details: [
-        '直接文本输入和编辑',
-        'PDF、Word、PPT文件上传',
-        '网页链接内容抓取',
-        '主题关键词智能扩展'
+        '直接粘贴文本内容生成',
+        '上传PDF、Word等文档文件',
+        '输入网页URL自动抓取内容',
+        '输入主题关键词智能扩展'
       ]
     },
     {
-      icon: GlobeAltIcon,
-      title: '多语言支持',
-      description: '支持中文、英文等多种语言，满足全球用户的学习需求',
+      icon: CloudArrowUpIcon,
+      title: '一键导出',
+      description: '生成的闪卡可直接导出为Anki格式，无缝衔接学习流程',
       details: [
-        '中英文内容智能识别',
-        '多语言闪卡生成',
-        '语言学习专用模式',
-        '本地化界面支持'
+        '导出标准.apkg格式文件',
+        '支持自定义卡组名称',
+        '可选择导出部分或全部卡片',
+        '兼容Anki桌面版和移动版'
       ]
     },
     {
-      icon: CpuChipIcon,
-      title: '智能难度调节',
-      description: '根据学习目标和水平，自动调整闪卡难度和复杂度',
+      icon: ClockIcon,
+      title: '高效便捷',
+      description: '大幅减少手动制卡时间，让学习更专注于记忆和理解',
       details: [
-        '初级、中级、高级难度选择',
-        '自适应难度调整算法',
-        '个性化学习路径规划',
-        '学习进度智能跟踪'
+        '几分钟完成数十张闪卡制作',
+        '实时预览生成的卡片内容',
+        '支持在线编辑和调整',
+        '简洁直观的操作界面'
       ]
     }
   ];
@@ -75,44 +75,34 @@ export default function Features() {
    */
   const advancedFeatures = [
     {
-      icon: ClockIcon,
-      title: '批量处理',
-      description: '支持大量内容的批量处理，提高学习效率'
+      icon: DocumentTextIcon,
+      title: '智能内容提取',
+      description: '从各类文档中准确提取学习内容'
     },
     {
       icon: AcademicCapIcon,
-      title: '学科专业化',
-      description: '针对不同学科优化，提供专业的学习支持'
+      title: '多学科适用',
+      description: '适用于语言、历史、科学等各类学科'
     },
     {
       icon: ChartBarIcon,
-      title: '学习分析',
-      description: '详细的学习数据分析和进度跟踪'
-    },
-    {
-      icon: CloudArrowUpIcon,
-      title: '云端同步',
-      description: '多设备云端同步，随时随地学习'
-    },
-    {
-      icon: DevicePhoneMobileIcon,
-      title: '移动优化',
-      description: '完美适配移动设备，支持离线学习'
+      title: '任务管理',
+      description: '查看历史生成记录，管理学习材料'
     },
     {
       icon: ShieldCheckIcon,
       title: '数据安全',
-      description: '企业级数据加密和隐私保护'
+      description: '用户数据加密存储，保护隐私安全'
     },
     {
-      icon: UserGroupIcon,
-      title: '团队协作',
-      description: '支持团队共享和协作学习'
+      icon: DevicePhoneMobileIcon,
+      title: '响应式设计',
+      description: '完美适配桌面和移动设备浏览器'
     },
     {
       icon: ArrowPathIcon,
-      title: '持续更新',
-      description: '定期功能更新和AI模型优化'
+      title: '批量编辑',
+      description: '支持批量删除、恢复闪卡操作'
     }
   ];
 
@@ -121,24 +111,24 @@ export default function Features() {
    */
   const useCases = [
     {
-      title: '学生考试复习',
-      description: '快速制作考试复习卡片，提高记忆效率',
-      example: '将教材内容转换为闪卡，系统化复习知识点'
+      title: '考试备考',
+      description: '快速将教材、讲义转换为闪卡，系统化复习',
+      example: '上传课程PDF，自动生成知识点问答卡片'
     },
     {
       title: '语言学习',
-      description: '制作词汇和语法卡片，加速语言掌握',
-      example: '从文章中提取生词，自动生成双语卡片'
+      description: '制作单词、短语卡片，加速词汇积累',
+      example: '粘贴英文文章，提取生词并生成双语卡片'
     },
     {
-      title: '职业技能培训',
-      description: '制作专业知识卡片，提升职业能力',
-      example: '将培训资料转换为实用的技能卡片'
+      title: '职业认证',
+      description: '整理专业考试资料，提高记忆效率',
+      example: '将培训文档转换为重点知识闪卡'
     },
     {
-      title: '学术研究',
-      description: '整理研究资料，构建知识体系',
-      example: '从论文中提取关键概念，建立知识网络'
+      title: '知识管理',
+      description: '构建个人知识库，长期积累学习成果',
+      example: '从阅读材料中提取关键概念，建立知识体系'
     }
   ];
 
@@ -149,10 +139,10 @@ export default function Features() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl md:text-6xl">
-              强大的AI功能
+              AI驱动的闪卡生成工具
             </h1>
             <p className="mt-6 max-w-3xl mx-auto text-xl text-gray-600">
-              Ankigenix集成了最先进的AI技术，为您提供智能、高效、个性化的学习卡片生成体验
+              AnkiGenix利用AI技术，帮助您快速将学习材料转换为高质量的Anki闪卡，大幅提升学习效率
             </p>
           </div>
         </div>
@@ -205,13 +195,13 @@ export default function Features() {
       <div className="bg-gray-50 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900">高级功能</h2>
+            <h2 className="text-3xl font-bold text-gray-900">更多特性</h2>
             <p className="mt-4 text-lg text-gray-600">
-              更多强大功能，满足您的各种学习需求
+              丰富的功能特性，提升学习体验
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {advancedFeatures.map((feature, index) => {
               const IconComponent = feature.icon;
               return (
@@ -258,19 +248,19 @@ export default function Features() {
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-white mb-8">技术优势</h2>
+            <h2 className="text-3xl font-bold text-white mb-8">为什么选择AnkiGenix</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="text-center">
-                <div className="text-4xl font-bold text-white mb-2">99.9%</div>
-                <div className="text-blue-100">内容识别准确率</div>
+                <div className="text-4xl font-bold text-white mb-2">简单易用</div>
+                <div className="text-blue-100">三步完成闪卡生成</div>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold text-white mb-2">&lt;3s</div>
-                <div className="text-blue-100">平均生成时间</div>
+                <div className="text-4xl font-bold text-white mb-2">高效准确</div>
+                <div className="text-blue-100">AI智能提取知识点</div>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold text-white mb-2">50+</div>
-                <div className="text-blue-100">支持语言数量</div>
+                <div className="text-4xl font-bold text-white mb-2">完全兼容</div>
+                <div className="text-blue-100">支持Anki标准格式</div>
               </div>
             </div>
           </div>
@@ -281,18 +271,18 @@ export default function Features() {
       <div className="py-16">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-8">
-            准备好体验AI驱动的学习了吗？
+            开始使用AnkiGenix
           </h2>
           <p className="text-xl text-gray-600 mb-8">
-            立即开始使用Ankigenix，让AI为您的学习加速
+            立即体验AI驱动的闪卡生成，让学习更高效
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-              免费开始使用
-            </button>
-            <button className="border border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
-              查看演示
-            </button>
+            <a href="/register" className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+              免费注册
+            </a>
+            <a href="/dashboard" className="border border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+              进入控制台
+            </a>
           </div>
         </div>
       </div>

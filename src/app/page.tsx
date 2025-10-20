@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 
 /**
  * 首页组件
- * 包含Hero部分、功能特性、定价CTA和使用说明区域
+ * 包含Hero部分、功能特性和使用说明区域
  */
 export default function Home() {
   // JSON-LD 结构化数据
@@ -31,25 +31,9 @@ export default function Home() {
     "name": "Ankigenix",
     "applicationCategory": "EducationalApplication",
     "operatingSystem": "Web",
-    "offers": [
-      {
-        "@type": "Offer",
-        "name": "免费版",
-        "price": "0",
-        "priceCurrency": "CNY",
-        "description": "每月50张卡片，基础AI生成"
-      },
-      {
-        "@type": "Offer",
-        "name": "专业版",
-        "price": "29",
-        "priceCurrency": "CNY",
-        "description": "无限制卡片生成，高级AI生成，所有输入方式"
-      }
-    ],
     "description": "AI驱动的科学闪卡生成器，支持多种输入方式，智能生成高质量学习闪卡",
     "featureList": [
-      "多种输入方式：文本、文件、URL、视频",
+      "多种输入方式：文本、文件、URL、主题",
       "AI智能生成高质量闪卡",
       "质量评分系统",
       "导出为Anki格式(.apkg)",
@@ -158,99 +142,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 定价CTA部分 */}
-      <section className="py-20 bg-blue-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
-            开始你的高效学习之旅
-          </h2>
-          <p className="text-xl text-gray-600 mb-8">
-            选择适合你的计划，立即体验AI驱动的智能学习
-          </p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
-            {/* 免费计划 */}
-            <div className="bg-white rounded-xl p-8 border-2 border-gray-200 hover:border-blue-300 transition-colors">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">免费版</h3>
-              <div className="text-4xl font-bold text-gray-900 mb-6">
-                ¥0<span className="text-lg font-normal text-gray-600">/月</span>
-              </div>
-              <ul className="text-left space-y-3 mb-8">
-                <li className="flex items-center">
-                  <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  每月50张卡片
-                </li>
-                <li className="flex items-center">
-                  <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  基础AI生成
-                </li>
-                <li className="flex items-center">
-                  <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  文本输入
-                </li>
-              </ul>
-              <Link
-                href="/register"
-                className="w-full bg-gray-900 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-800 transition-colors block text-center"
-              >
-                免费开始
-              </Link>
-            </div>
-
-            {/* 专业计划 */}
-            <div className="bg-white rounded-xl p-8 border-2 border-blue-500 hover:border-blue-600 transition-colors relative">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <span className="bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
-                  推荐
-                </span>
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">专业版</h3>
-              <div className="text-4xl font-bold text-gray-900 mb-6">
-                ¥29<span className="text-lg font-normal text-gray-600">/月</span>
-              </div>
-              <ul className="text-left space-y-3 mb-8">
-                <li className="flex items-center">
-                  <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  无限制卡片生成
-                </li>
-                <li className="flex items-center">
-                  <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  高级AI生成
-                </li>
-                <li className="flex items-center">
-                  <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  所有输入方式
-                </li>
-                <li className="flex items-center">
-                  <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  主题生成功能
-                </li>
-              </ul>
-              <Link
-                href="/register"
-                className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors block text-center"
-              >
-                立即升级
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* 使用说明部分 */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -326,11 +217,8 @@ export default function Home() {
               <Link href="/features" className="text-gray-600 hover:text-blue-600 transition-colors">
                 功能特性
               </Link>
-              <Link href="/pricing" className="text-gray-600 hover:text-blue-600 transition-colors">
-                定价
-              </Link>
-              <Link href="/help" className="text-gray-600 hover:text-blue-600 transition-colors">
-                帮助文档
+              <Link href="/dashboard" className="text-gray-600 hover:text-blue-600 transition-colors">
+                控制台
               </Link>
             </div>
             <div className="mt-8 pt-8 border-t border-gray-200">
