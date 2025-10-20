@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ClockIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import ResultsList from '@/components/ResultsList';
 import ToastContainer, { ToastMessage } from '@/components/Toast';
 import CatalogSelectionModal from '@/components/CatalogSelectionModal';
@@ -12,18 +11,10 @@ import { Flashcard, FlashcardSet } from '@/types/flashcard';
 
 /**
  * Dashboard页面组件
- * 提供用户的主要工作界面，包含积分信息、任务状态和核心操作区域
+ * 提供用户的主要工作界面，包含任务操作和核心功能区域
  */
 function DashboardPage() {
   const router = useRouter();
-
-  // 模拟任务状态数据
-  const [taskStatus] = useState({
-    pending: 2,
-    processing: 1,
-    completed: 15,
-    failed: 0
-  });
 
   // 当前选中的输入方式
   const [activeTab, setActiveTab] = useState<'text' | 'file' | 'url' | 'topic'>('text');
@@ -575,44 +566,6 @@ function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* 顶部信息栏 */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* 页面标题 */}
-            <div className="flex items-center">
-              <h1 className="text-xl font-semibold text-gray-900">控制台</h1>
-            </div>
-
-            {/* 任务状态 */}
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-1">
-                  <ClockIcon className="h-4 w-4 text-yellow-500" />
-                  <span className="text-sm text-gray-600">处理中: {taskStatus.processing}</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <div className="h-4 w-4 bg-yellow-100 rounded-full flex items-center justify-center">
-                    <div className="h-2 w-2 bg-yellow-500 rounded-full"></div>
-                  </div>
-                  <span className="text-sm text-gray-600">等待中: {taskStatus.pending}</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <CheckCircleIcon className="h-4 w-4 text-green-500" />
-                  <span className="text-sm text-gray-600">已完成: {taskStatus.completed}</span>
-                </div>
-                {taskStatus.failed > 0 && (
-                  <div className="flex items-center space-x-1">
-                    <XCircleIcon className="h-4 w-4 text-red-500" />
-                    <span className="text-sm text-gray-600">失败: {taskStatus.failed}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* 主要内容区域 */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* 核心操作区域 */}
