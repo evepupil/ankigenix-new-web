@@ -266,12 +266,7 @@ function DashboardPage() {
         localStorage.setItem('currentFlashcardSet', JSON.stringify(flashcardSet));
 
         // 显示成功提示
-        showToast('success', '生成成功', `成功生成 ${cardsWithIds.length} 张闪卡，正在跳转到预览页面...`);
-
-        // 延迟后跳转到预览页面
-        setTimeout(() => {
-          router.push('/preview');
-        }, 1500);
+        showToast('success', '生成成功', `成功生成 ${cardsWithIds.length} 张闪卡`);
       } else {
         showToast('error', '生成失败', result?.error || '未知错误');
       }
@@ -363,12 +358,7 @@ function DashboardPage() {
       localStorage.setItem('currentFlashcardSet', JSON.stringify(flashcardSet));
 
       // 显示成功提示
-      showToast('success', '生成成功', `成功生成 ${cardsWithIds.length} 张闪卡，正在跳转到预览页面...`);
-
-      // 延迟后跳转到预览页面
-      setTimeout(() => {
-        router.push('/preview');
-      }, 1500);
+      showToast('success', '生成成功', `成功生成 ${cardsWithIds.length} 张闪卡`);
 
     } catch (error) {
       console.error('生成闪卡时出错:', error);
