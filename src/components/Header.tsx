@@ -183,12 +183,12 @@ export default function Header() {
             <div className="relative" ref={langMenuRef}>
               <button
                 onClick={toggleLangMenu}
-                className="flex items-center space-x-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-all"
+                className="flex items-center space-x-1.5 px-2 py-1 text-xs font-medium text-gray-600 hover:text-gray-900 border border-gray-300 rounded-md hover:border-gray-400 hover:bg-gray-50 transition-all"
               >
-                <span>{getLanguageInfo(locale).flag}</span>
-                <span>{locale === 'zh' ? '中文' : locale === 'en' ? 'EN' : '日本語'}</span>
+                <span className="text-sm">{getLanguageInfo(locale).flag}</span>
+                <span>{locale === 'zh' ? '中文' : locale === 'en' ? 'EN' : '日'}</span>
                 <svg
-                  className={`w-4 h-4 transition-transform ${isLangMenuOpen ? 'rotate-180' : ''}`}
+                  className={`w-3 h-3 transition-transform ${isLangMenuOpen ? 'rotate-180' : ''}`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -199,23 +199,23 @@ export default function Header() {
 
               {/* 语言下拉菜单 */}
               {isLangMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50 animate-slide-in">
+                <div className="absolute right-0 mt-1.5 w-36 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50 animate-slide-in">
                   {(['zh', 'en', 'ja'] as const).map((lang) => {
                     const langInfo = getLanguageInfo(lang);
                     return (
                       <button
                         key={lang}
                         onClick={() => changeLanguage(lang)}
-                        className={`flex items-center w-full px-4 py-2.5 text-sm transition-colors ${
+                        className={`flex items-center w-full px-3 py-1.5 text-xs transition-colors ${
                           locale === lang
                             ? 'bg-blue-50 text-blue-600 font-medium'
                             : 'text-gray-700 hover:bg-gray-50'
                         }`}
                       >
-                        <span className="mr-3 text-lg">{langInfo.flag}</span>
+                        <span className="mr-2 text-sm">{langInfo.flag}</span>
                         <span className="flex-1 text-left">{langInfo.name}</span>
                         {locale === lang && (
-                          <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                          <svg className="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                             <path
                               fillRule="evenodd"
                               d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
