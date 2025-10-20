@@ -100,63 +100,56 @@ export default function Header() {
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50 backdrop-blur-sm bg-opacity-95">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo - 极简设计 */}
-          <div className="flex-shrink-0">
-            <Link href="/" className="flex items-center space-x-3 group">
-              <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-all">
-                <span className="text-white font-bold text-lg">A</span>
-              </div>
-              <span className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">AnkiGenix</span>
-            </Link>
-          </div>
+          {/* 左侧：Logo + 导航菜单 */}
+          <div className="flex items-center space-x-8">
+            {/* Logo - 极简设计 */}
+            <div className="flex-shrink-0">
+              <Link href="/" className="flex items-center space-x-3 group">
+                <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-all">
+                  <span className="text-white font-bold text-lg">A</span>
+                </div>
+                <span className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">AnkiGenix</span>
+              </Link>
+            </div>
 
-          {/* 桌面端导航菜单 - 极简风格 */}
-          <nav className="hidden md:flex items-center space-x-1">
-            <Link
-              href="/"
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                isActive('/')
-                  ? 'text-blue-600 bg-blue-50'
-                  : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
-              }`}
-            >
-              首页
-            </Link>
-            <Link
-              href="/features"
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                isActive('/features')
-                  ? 'text-blue-600 bg-blue-50'
-                  : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
-              }`}
-            >
-              功能
-            </Link>
-            <Link
-              href="/pricing"
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                isActive('/pricing')
-                  ? 'text-blue-600 bg-blue-50'
-                  : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
-              }`}
-            >
-              定价
-            </Link>
-            {isAuthenticated && (
+            {/* 桌面端导航菜单 - 极简风格 */}
+            <nav className="hidden md:flex items-center space-x-1">
               <Link
-                href="/dashboard"
+                href="/"
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  isActive('/dashboard')
+                  isActive('/')
                     ? 'text-blue-600 bg-blue-50'
                     : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >
-                控制台
+                首页
               </Link>
-            )}
-          </nav>
+              <Link
+                href="/features"
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  isActive('/features')
+                    ? 'text-blue-600 bg-blue-50'
+                    : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                功能
+              </Link>
+              {isAuthenticated && (
+                <Link
+                  href="/dashboard"
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    isActive('/dashboard')
+                      ? 'text-blue-600 bg-blue-50'
+                      : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  控制台
+                </Link>
+              )}
+            </nav>
+          </div>
 
           {/* 右侧工具栏 - 极简设计 */}
           <div className="hidden md:flex items-center space-x-3">
@@ -332,17 +325,6 @@ export default function Header() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 功能
-              </Link>
-              <Link
-                href="/pricing"
-                className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                  isActive('/pricing')
-                    ? 'text-blue-600 bg-blue-50'
-                    : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
-                }`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                定价
               </Link>
               {isAuthenticated && (
                 <Link

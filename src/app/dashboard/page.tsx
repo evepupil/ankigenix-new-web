@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { CreditCardIcon, ClockIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
+import { ClockIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import ResultsList from '@/components/ResultsList';
 import ToastContainer, { ToastMessage } from '@/components/Toast';
 import CatalogSelectionModal from '@/components/CatalogSelectionModal';
@@ -16,13 +16,6 @@ import { Flashcard, FlashcardSet } from '@/types/flashcard';
  */
 function DashboardPage() {
   const router = useRouter();
-
-  // 模拟用户数据
-  const [userCredits] = useState({
-    remaining: 150,
-    total: 200,
-    plan: 'Pro'
-  });
 
   // 模拟任务状态数据
   const [taskStatus] = useState({
@@ -586,17 +579,9 @@ function DashboardPage() {
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* 积分信息 */}
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-2">
-                <CreditCardIcon className="h-5 w-5 text-blue-600" />
-                <span className="text-sm font-medium text-gray-700">剩余积分:</span>
-                <span className="text-lg font-bold text-blue-600">{userCredits.remaining}</span>
-                <span className="text-sm text-gray-500">/ {userCredits.total}</span>
-                <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-                  {userCredits.plan}
-                </span>
-              </div>
+            {/* 页面标题 */}
+            <div className="flex items-center">
+              <h1 className="text-xl font-semibold text-gray-900">控制台</h1>
             </div>
 
             {/* 任务状态 */}
