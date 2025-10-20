@@ -15,6 +15,7 @@ import {
   ArrowPathIcon
 } from '@heroicons/react/24/outline';
 import { useLanguage } from '@/contexts/LanguageContext';
+import SEOHead from '@/components/SEOHead';
 
 /**
  * 功能特性页面组件
@@ -87,6 +88,9 @@ export default function Features() {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* SEO Meta tags */}
+      <SEOHead page="features" />
+
       {/* Hero区域 */}
       <div className="bg-gradient-to-br from-blue-50 to-indigo-100 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

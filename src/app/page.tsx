@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
+import SEOHead from '@/components/SEOHead';
 
 /**
  * 首页组件
@@ -14,10 +15,10 @@ export default function Home() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "Ankigenix",
+    "name": "AnkiGenix",
     "applicationCategory": "EducationalApplication",
     "operatingSystem": "Web",
-    "description": "AI驱动的科学闪卡生成器，支持多种输入方式，智能生成高质量学习闪卡",
+    "description": t('seo.home.description'),
     "featureList": [
       "多种输入方式：文本、文件、URL、主题",
       "AI智能生成高质量闪卡",
@@ -35,6 +36,9 @@ export default function Home() {
 
   return (
     <div className="bg-white">
+      {/* SEO Meta tags */}
+      <SEOHead page="home" />
+
       {/* 添加 JSON-LD 结构化数据 */}
       <script
         type="application/ld+json"

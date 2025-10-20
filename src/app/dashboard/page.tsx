@@ -9,6 +9,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import { apiService, Chapter } from '@/services/api';
 import { Flashcard, FlashcardSet } from '@/types/flashcard';
 import { useLanguage } from '@/contexts/LanguageContext';
+import SEOHead from '@/components/SEOHead';
 
 /**
  * Dashboard页面组件
@@ -558,6 +559,9 @@ function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* SEO Meta tags */}
+      <SEOHead page="dashboard" />
+
       {/* 主要内容区域 */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* 核心操作区域 */}

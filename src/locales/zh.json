@@ -14,6 +14,32 @@
     "warning": "警告",
     "info": "信息"
   },
+  "seo": {
+    "siteName": "AnkiGenix",
+    "home": {
+      "title": "AnkiGenix - AI驱动的智能闪卡生成器",
+      "description": "使用AI技术快速将学习材料转换为高质量的Anki闪卡。支持文本、PDF、网页等多种格式，大幅提升学习效率。",
+      "keywords": "Anki, 闪卡, AI学习, 记忆卡片, 学习工具, 智能生成, 间隔重复"
+    },
+    "features": {
+      "title": "功能特性 - AnkiGenix",
+      "description": "了解AnkiGenix的强大功能：AI智能生成、多格式支持、一键导出、批量处理等，助力高效学习。",
+      "keywords": "Anki功能, AI生成闪卡, PDF转Anki, 批量生成, 学习效率"
+    },
+    "dashboard": {
+      "title": "控制台 - AnkiGenix",
+      "description": "在控制台创建和管理您的Anki闪卡，支持文本、文件、网页和主题生成。",
+      "keywords": "Anki控制台, 创建闪卡, 管理学习材料"
+    },
+    "login": {
+      "title": "登录 - AnkiGenix",
+      "description": "登录AnkiGenix开始您的智能学习之旅。"
+    },
+    "register": {
+      "title": "注册 - AnkiGenix",
+      "description": "注册AnkiGenix账户，免费体验AI驱动的闪卡生成服务。"
+    }
+  },
   "header": {
     "appName": "AnkiGenix",
     "userMenu": "用户菜单"

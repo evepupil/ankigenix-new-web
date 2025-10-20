@@ -14,6 +14,32 @@
     "warning": "警告",
     "info": "情報"
   },
+  "seo": {
+    "siteName": "AnkiGenix",
+    "home": {
+      "title": "AnkiGenix - AI搭載スマートフラッシュカード生成ツール",
+      "description": "AI技術を使って学習資料を高品質なAnkiフラッシュカードに変換。テキスト、PDF、Webページなどに対応。学習効率を大幅に向上。",
+      "keywords": "Anki, フラッシュカード, AI学習, 記憶カード, 学習ツール, スマート生成, 間隔反復"
+    },
+    "features": {
+      "title": "機能 - AnkiGenix",
+      "description": "AnkiGenixの強力な機能：AIスマート生成、多形式対応、ワンクリックエクスポート、バッチ処理など、効率的な学習をサポート。",
+      "keywords": "Anki機能, AIフラッシュカード生成, PDFからAnki, バッチ生成, 学習効率"
+    },
+    "dashboard": {
+      "title": "ダッシュボード - AnkiGenix",
+      "description": "ダッシュボードでAnkiフラッシュカードを作成・管理。テキスト、ファイル、Web、トピック生成に対応。",
+      "keywords": "Ankiダッシュボード, フラッシュカード作成, 学習資料管理"
+    },
+    "login": {
+      "title": "ログイン - AnkiGenix",
+      "description": "AnkiGenixにログインして、インテリジェントな学習の旅を始めましょう。"
+    },
+    "register": {
+      "title": "新規登録 - AnkiGenix",
+      "description": "AnkiGenixアカウントを作成して、AI搭載フラッシュカード生成を無料で体験。"
+    }
+  },
   "header": {
     "appName": "AnkiGenix",
     "userMenu": "ユーザーメニュー"

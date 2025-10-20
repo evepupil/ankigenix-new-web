@@ -14,6 +14,32 @@
     "warning": "Warning",
     "info": "Info"
   },
+  "seo": {
+    "siteName": "AnkiGenix",
+    "home": {
+      "title": "AnkiGenix - AI-Powered Smart Flashcard Generator",
+      "description": "Transform your learning materials into high-quality Anki flashcards using AI technology. Support for text, PDF, web pages and more. Boost your learning efficiency significantly.",
+      "keywords": "Anki, flashcards, AI learning, memory cards, study tool, smart generation, spaced repetition"
+    },
+    "features": {
+      "title": "Features - AnkiGenix",
+      "description": "Discover AnkiGenix's powerful features: AI smart generation, multi-format support, one-click export, batch processing, and more for efficient learning.",
+      "keywords": "Anki features, AI flashcard generation, PDF to Anki, batch generation, learning efficiency"
+    },
+    "dashboard": {
+      "title": "Dashboard - AnkiGenix",
+      "description": "Create and manage your Anki flashcards in the dashboard. Support for text, file, web and topic generation.",
+      "keywords": "Anki dashboard, create flashcards, manage learning materials"
+    },
+    "login": {
+      "title": "Login - AnkiGenix",
+      "description": "Login to AnkiGenix and start your intelligent learning journey."
+    },
+    "register": {
+      "title": "Sign Up - AnkiGenix",
+      "description": "Create your AnkiGenix account and experience AI-powered flashcard generation for free."
+    }
+  },
   "header": {
     "appName": "AnkiGenix",
     "userMenu": "User Menu"
