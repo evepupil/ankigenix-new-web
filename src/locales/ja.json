@@ -1,0 +1,164 @@
+{
+  "common": {
+    "home": "ホーム",
+    "features": "機能",
+    "dashboard": "ダッシュボード",
+    "login": "ログイン",
+    "register": "登録",
+    "logout": "ログアウト",
+    "settings": "設定",
+    "language": "言語",
+    "loading": "読み込み中...",
+    "success": "成功",
+    "error": "エラー",
+    "warning": "警告",
+    "info": "情報"
+  },
+  "header": {
+    "appName": "AnkiGenix",
+    "userMenu": "ユーザーメニュー"
+  },
+  "home": {
+    "hero": {
+      "title": "AI搭載の",
+      "titleHighlight": "スマートフラッシュカード生成ツール",
+      "subtitle": "あらゆる学習資料を効率的なAnkiフラッシュカードに変換し、科学的な記憶を実現",
+      "cta": "今すぐ始める",
+      "secondary": "詳細を見る"
+    },
+    "features": {
+      "title": "コア機能",
+      "subtitle": "強力なAI技術で効率的な学習を実現",
+      "aiGeneration": {
+        "title": "AI自動生成",
+        "description": "テキスト、ファイル、Webページから自動的に重要な知識ポイントを抽出し、高品質なフラッシュカードを生成"
+      },
+      "multiFormat": {
+        "title": "多形式対応",
+        "description": "PDF、Word、TXT、Markdownなど、さまざまなファイル形式に対応"
+      },
+      "export": {
+        "title": "ワンクリックエクスポート",
+        "description": "Anki標準形式（.apkg）またはCSVファイルにエクスポートして、すぐに学習を開始"
+      },
+      "efficiency": {
+        "title": "効率的な学習",
+        "description": "科学的な間隔反復アルゴリズムで、より良い記憶と復習をサポート"
+      }
+    },
+    "howItWorks": {
+      "title": "使い方",
+      "step1": {
+        "title": "コンテンツを入力",
+        "description": "テキストを貼り付け、ファイルをアップロード、またはWebリンクを入力"
+      },
+      "step2": {
+        "title": "AI処理",
+        "description": "AIが自動的に分析し、重要な知識ポイントを抽出"
+      },
+      "step3": {
+        "title": "カード生成",
+        "description": "プレビューと編集が可能な構造化されたAnkiフラッシュカードを取得"
+      },
+      "step4": {
+        "title": "学習開始",
+        "description": "Ankiにエクスポートして効率的な学習を開始"
+      }
+    },
+    "cta": {
+      "title": "始める準備はできましたか？",
+      "subtitle": "AI搭載のスマートフラッシュカード生成を今すぐ体験",
+      "button": "無料で始める"
+    }
+  },
+  "dashboard": {
+    "title": "新しいフラッシュカードセットを作成",
+    "tabs": {
+      "text": "テキスト",
+      "file": "ファイル",
+      "url": "Web",
+      "topic": "トピック"
+    },
+    "inputs": {
+      "textLabel": "学習内容",
+      "textPlaceholder": "学習資料を貼り付けてください...",
+      "fileLabel": "ファイル",
+      "fileUploadText": "クリックしてアップロード",
+      "fileDragText": "またはファイルをここにドラッグ＆ドロップ",
+      "fileHint": "PDF、DOC、TXT、MD、最大10MB",
+      "urlLabel": "Webリンク",
+      "urlPlaceholder": "https://example.com",
+      "topicLabel": "学習トピック",
+      "topicPlaceholder": "例：高校数学の関数、英文法..."
+    },
+    "buttons": {
+      "generate": "生成開始",
+      "generating": "生成中"
+    },
+    "messages": {
+      "inputRequired": "学習内容を入力してください",
+      "inputHint": "テキストボックスに学習資料を貼り付けてください",
+      "fileRequired": "ファイルをアップロードしてください",
+      "fileHint": "アップロードエリアにファイルを選択またはドラッグしてください",
+      "urlRequired": "Webリンクを入力してください",
+      "urlHint": "有効なWebのURLを入力してください",
+      "topicRequired": "学習トピックを入力してください",
+      "topicHint": "例：高校数学の関数、英文法など",
+      "fileTypeError": "ファイルタイプがサポートされていません",
+      "fileTypeHint": "PDF、DOC、DOCX、TXTまたはMDファイルをアップロードしてください",
+      "fileSizeError": "ファイルが大きすぎます",
+      "fileSizeHint": "ファイルサイズは10MBを超えることはできません",
+      "fileSelected": "ファイルが選択されました",
+      "analyzingCatalog": "ファイルのアウトラインを分析中",
+      "analyzingHint": "お待ちください...",
+      "catalogFailed": "アウトライン生成に失敗しました",
+      "catalogFormatError": "アウトラインデータ形式エラー",
+      "generating": "フラッシュカードを生成中",
+      "generatingHint": "{count}個のセクションのフラッシュカードを生成中、お待ちください...",
+      "generateSuccess": "生成に成功しました",
+      "generateSuccessHint": "{count}枚のフラッシュカードを生成しました",
+      "generateFailed": "生成に失敗しました",
+      "featureComingSoon": "機能開発中",
+      "topicFeatureHint": "トピック生成機能は近日公開予定"
+    },
+    "taskHistory": {
+      "title": "タスク履歴",
+      "empty": "タスク記録がありません",
+      "loading": "読み込み中..."
+    }
+  },
+  "features": {
+    "hero": {
+      "title": "機能",
+      "subtitle": "AnkiGenixがどのように効率的な学習をサポートするかを学ぶ"
+    },
+    "coreFeatures": {
+      "title": "コア機能",
+      "aiGeneration": {
+        "title": "AIスマート生成",
+        "description": "AI技術を使用して学習資料を自動的に分析し、構造化されたAnkiフラッシュカードを迅速に生成"
+      },
+      "multiFormat": {
+        "title": "多形式対応",
+        "description": "テキスト、PDF、Word、Webページなど、さまざまな入力形式をサポート"
+      },
+      "export": {
+        "title": "柔軟なエクスポート",
+        "description": "Anki標準形式とCSV形式へのエクスポートをサポート"
+      },
+      "efficiency": {
+        "title": "効率的な学習",
+        "description": "科学的な記憶アルゴリズムで、より良い記憶と復習をサポート"
+      }
+    },
+    "advancedFeatures": {
+      "title": "高度な機能"
+    },
+    "useCases": {
+      "title": "使用例"
+    },
+    "technicalAdvantages": {
+      "title": "技術的優位性"
+    }
+  }
+}

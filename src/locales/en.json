@@ -1,0 +1,164 @@
+{
+  "common": {
+    "home": "Home",
+    "features": "Features",
+    "dashboard": "Dashboard",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "settings": "Settings",
+    "language": "Language",
+    "loading": "Loading...",
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Info"
+  },
+  "header": {
+    "appName": "AnkiGenix",
+    "userMenu": "User Menu"
+  },
+  "home": {
+    "hero": {
+      "title": "AI-Powered",
+      "titleHighlight": "Smart Flashcard Generator",
+      "subtitle": "Transform any learning material into efficient Anki flashcards for scientific memorization",
+      "cta": "Get Started",
+      "secondary": "Learn More"
+    },
+    "features": {
+      "title": "Core Features",
+      "subtitle": "Powerful AI technology for efficient learning",
+      "aiGeneration": {
+        "title": "AI Generation",
+        "description": "Automatically extract key knowledge points from text, files, or web pages to generate high-quality flashcards"
+      },
+      "multiFormat": {
+        "title": "Multi-Format Support",
+        "description": "Supports PDF, Word, TXT, Markdown, and more file formats"
+      },
+      "export": {
+        "title": "One-Click Export",
+        "description": "Export to Anki standard format (.apkg) or CSV files and start learning immediately"
+      },
+      "efficiency": {
+        "title": "Efficient Learning",
+        "description": "Scientific spaced repetition algorithm helps you memorize and review better"
+      }
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "step1": {
+        "title": "Input Content",
+        "description": "Paste text, upload files, or enter web links"
+      },
+      "step2": {
+        "title": "AI Processing",
+        "description": "AI automatically analyzes and extracts key knowledge points"
+      },
+      "step3": {
+        "title": "Generate Cards",
+        "description": "Get structured Anki flashcards that can be previewed and edited"
+      },
+      "step4": {
+        "title": "Start Learning",
+        "description": "Export and start efficient learning in Anki"
+      }
+    },
+    "cta": {
+      "title": "Ready to Get Started?",
+      "subtitle": "Experience AI-powered smart flashcard generation now",
+      "button": "Start Free"
+    }
+  },
+  "dashboard": {
+    "title": "Create New Flashcard Set",
+    "tabs": {
+      "text": "Text",
+      "file": "File",
+      "url": "Web",
+      "topic": "Topic"
+    },
+    "inputs": {
+      "textLabel": "Learning Content",
+      "textPlaceholder": "Paste your learning materials...",
+      "fileLabel": "File",
+      "fileUploadText": "Click to upload",
+      "fileDragText": "or drag and drop file here",
+      "fileHint": "PDF, DOC, TXT, MD, max 10MB",
+      "urlLabel": "Web Link",
+      "urlPlaceholder": "https://example.com",
+      "topicLabel": "Learning Topic",
+      "topicPlaceholder": "e.g., High school math functions, English grammar..."
+    },
+    "buttons": {
+      "generate": "Generate",
+      "generating": "Generating"
+    },
+    "messages": {
+      "inputRequired": "Please input learning content",
+      "inputHint": "Please paste your learning materials in the text box",
+      "fileRequired": "Please upload a file",
+      "fileHint": "Please select or drag a file to the upload area",
+      "urlRequired": "Please enter a web link",
+      "urlHint": "Please enter a valid web URL",
+      "topicRequired": "Please enter a learning topic",
+      "topicHint": "e.g., High school math functions, English grammar, etc.",
+      "fileTypeError": "File type not supported",
+      "fileTypeHint": "Please upload PDF, DOC, DOCX, TXT or MD files",
+      "fileSizeError": "File too large",
+      "fileSizeHint": "File size cannot exceed 10MB",
+      "fileSelected": "File selected",
+      "analyzingCatalog": "Analyzing file outline",
+      "analyzingHint": "Please wait...",
+      "catalogFailed": "Outline generation failed",
+      "catalogFormatError": "Outline data format error",
+      "generating": "Generating flashcards",
+      "generatingHint": "Generating flashcards for {count} sections, please wait...",
+      "generateSuccess": "Generated successfully",
+      "generateSuccessHint": "Successfully generated {count} flashcards",
+      "generateFailed": "Generation failed",
+      "featureComingSoon": "Feature coming soon",
+      "topicFeatureHint": "Topic generation feature coming soon"
+    },
+    "taskHistory": {
+      "title": "Task History",
+      "empty": "No task records",
+      "loading": "Loading..."
+    }
+  },
+  "features": {
+    "hero": {
+      "title": "Features",
+      "subtitle": "Learn how AnkiGenix helps you study efficiently"
+    },
+    "coreFeatures": {
+      "title": "Core Features",
+      "aiGeneration": {
+        "title": "AI Smart Generation",
+        "description": "Use AI technology to automatically analyze learning materials and quickly generate structured Anki flashcards"
+      },
+      "multiFormat": {
+        "title": "Multi-Format Support",
+        "description": "Supports text, PDF, Word, web pages, and other input formats"
+      },
+      "export": {
+        "title": "Flexible Export",
+        "description": "Export to Anki standard format and CSV format"
+      },
+      "efficiency": {
+        "title": "Efficient Learning",
+        "description": "Scientific memory algorithm helps you memorize and review better"
+      }
+    },
+    "advancedFeatures": {
+      "title": "Advanced Features"
+    },
+    "useCases": {
+      "title": "Use Cases"
+    },
+    "technicalAdvantages": {
+      "title": "Technical Advantages"
+    }
+  }
+}

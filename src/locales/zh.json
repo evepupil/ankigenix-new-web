@@ -1,0 +1,164 @@
+{
+  "common": {
+    "home": "首页",
+    "features": "功能",
+    "dashboard": "控制台",
+    "login": "登录",
+    "register": "注册",
+    "logout": "退出登录",
+    "settings": "个人设置",
+    "language": "语言",
+    "loading": "加载中...",
+    "success": "成功",
+    "error": "错误",
+    "warning": "警告",
+    "info": "信息"
+  },
+  "header": {
+    "appName": "AnkiGenix",
+    "userMenu": "用户菜单"
+  },
+  "home": {
+    "hero": {
+      "title": "AI驱动的",
+      "titleHighlight": "智能闪卡生成器",
+      "subtitle": "将任何学习材料转化为高效的Anki闪卡，让记忆更科学",
+      "cta": "立即开始",
+      "secondary": "了解更多"
+    },
+    "features": {
+      "title": "核心功能",
+      "subtitle": "强大的AI技术，让学习更高效",
+      "aiGeneration": {
+        "title": "AI智能生成",
+        "description": "自动从文本、文件或网页中提取关键知识点，生成高质量闪卡"
+      },
+      "multiFormat": {
+        "title": "多格式支持",
+        "description": "支持PDF、Word、TXT、Markdown等多种文件格式"
+      },
+      "export": {
+        "title": "一键导出",
+        "description": "导出为Anki标准格式(.apkg)或CSV文件，即刻开始学习"
+      },
+      "efficiency": {
+        "title": "高效学习",
+        "description": "科学的间隔重复算法，帮助你更好地记忆和复习"
+      }
+    },
+    "howItWorks": {
+      "title": "如何使用",
+      "step1": {
+        "title": "输入内容",
+        "description": "粘贴文本、上传文件或输入网页链接"
+      },
+      "step2": {
+        "title": "AI处理",
+        "description": "AI自动分析并提取关键知识点"
+      },
+      "step3": {
+        "title": "生成闪卡",
+        "description": "获得结构化的Anki闪卡，可预览和编辑"
+      },
+      "step4": {
+        "title": "开始学习",
+        "description": "导出并在Anki中开始高效学习"
+      }
+    },
+    "cta": {
+      "title": "准备好开始了吗？",
+      "subtitle": "立即体验AI驱动的智能闪卡生成",
+      "button": "免费开始"
+    }
+  },
+  "dashboard": {
+    "title": "创建新的闪卡集",
+    "tabs": {
+      "text": "文本",
+      "file": "文件",
+      "url": "网页",
+      "topic": "主题"
+    },
+    "inputs": {
+      "textLabel": "学习内容",
+      "textPlaceholder": "粘贴你的学习材料...",
+      "fileLabel": "文件",
+      "fileUploadText": "点击上传",
+      "fileDragText": "或拖拽文件到此处",
+      "fileHint": "PDF、DOC、TXT、MD，最大 10MB",
+      "urlLabel": "网页链接",
+      "urlPlaceholder": "https://example.com",
+      "topicLabel": "学习主题",
+      "topicPlaceholder": "例如：高中数学函数、英语语法..."
+    },
+    "buttons": {
+      "generate": "开始生成",
+      "generating": "生成中"
+    },
+    "messages": {
+      "inputRequired": "请输入学习内容",
+      "inputHint": "请在文本框中粘贴你的学习材料",
+      "fileRequired": "请上传文件",
+      "fileHint": "请选择或拖拽文件到上传区域",
+      "urlRequired": "请输入网页链接",
+      "urlHint": "请输入有效的网页URL地址",
+      "topicRequired": "请输入学习主题",
+      "topicHint": "例如：高中数学函数、英语语法等",
+      "fileTypeError": "文件类型不支持",
+      "fileTypeHint": "请上传 PDF, DOC, DOCX, TXT 或 MD 文件",
+      "fileSizeError": "文件过大",
+      "fileSizeHint": "文件大小不能超过 10MB",
+      "fileSelected": "文件已选择",
+      "analyzingCatalog": "正在分析文件大纲",
+      "analyzingHint": "请稍候...",
+      "catalogFailed": "大纲生成失败",
+      "catalogFormatError": "大纲数据格式错误",
+      "generating": "正在生成闪卡",
+      "generatingHint": "正在为 {count} 个章节生成闪卡，请稍候...",
+      "generateSuccess": "生成成功",
+      "generateSuccessHint": "成功生成 {count} 张闪卡",
+      "generateFailed": "生成失败",
+      "featureComingSoon": "功能开发中",
+      "topicFeatureHint": "主题生成功能即将上线"
+    },
+    "taskHistory": {
+      "title": "任务历史",
+      "empty": "暂无任务记录",
+      "loading": "加载中..."
+    }
+  },
+  "features": {
+    "hero": {
+      "title": "功能特性",
+      "subtitle": "了解AnkiGenix如何帮助你高效学习"
+    },
+    "coreFeatures": {
+      "title": "核心功能",
+      "aiGeneration": {
+        "title": "AI智能生成",
+        "description": "利用AI技术自动分析学习材料，快速生成结构化的Anki闪卡"
+      },
+      "multiFormat": {
+        "title": "多格式支持",
+        "description": "支持文本、PDF、Word、网页等多种输入格式"
+      },
+      "export": {
+        "title": "灵活导出",
+        "description": "支持导出为Anki标准格式和CSV格式"
+      },
+      "efficiency": {
+        "title": "高效学习",
+        "description": "科学的记忆算法，帮助你更好地记忆和复习"
+      }
+    },
+    "advancedFeatures": {
+      "title": "高级功能"
+    },
+    "useCases": {
+      "title": "使用场景"
+    },
+    "technicalAdvantages": {
+      "title": "技术优势"
+    }
+  }
+}
