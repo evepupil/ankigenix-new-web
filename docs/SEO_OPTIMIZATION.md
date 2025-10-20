@@ -87,11 +87,11 @@ export async function generateMetadata({ params }: { params: Promise<{ taskId: s
 
 ---
 
-### ⏳ 4. Sitemap.xml
+### ✅ 4. Sitemap.xml
 
 生成站点地图，帮助搜索引擎发现和索引页面。
 
-**待创建：** `src/app/sitemap.ts`
+**已创建：** `src/app/sitemap.ts`
 
 ```typescript
 import { MetadataRoute } from 'next';
@@ -277,7 +277,7 @@ const CatalogSelectionModal = dynamic(
 4. ⏳ 创建 OG 图片资源
 
 ### 中优先级（近期完成）
-5. ⏳ Sitemap.xml
+5. ✅ ~~Sitemap.xml~~ - **已完成**
 6. ⏳ Robots.txt
 7. ⏳ 动态路由 metadata 优化
 8. ⏳ 页面性能优化（图片优化）
@@ -315,6 +315,12 @@ curl http://localhost:3000/robots.txt
 
 ## 📝 更新日志
 
+### 2024-10-21
+- ✅ 创建 sitemap.ts 文件
+- ✅ 配置站点地图包含首页、功能页、定价页
+- ✅ 添加 NEXT_PUBLIC_SITE_URL 环境变量配置
+- ✅ 排除需要登录和私密页面
+
 ### 2024-10-16
 - ✅ 完成全局 metadata 配置（layout.tsx）
 - ✅ 优化首页 metadata 和 JSON-LD 结构化数据
@@ -335,4 +341,4 @@ curl http://localhost:3000/robots.txt
 ---
 
 **维护者：** Ankigenix 开发团队
-**最后更新：** 2024-10-16
+**最后更新：** 2024-10-21
