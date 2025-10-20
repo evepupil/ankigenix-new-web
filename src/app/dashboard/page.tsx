@@ -8,6 +8,7 @@ import CatalogSelectionModal from '@/components/CatalogSelectionModal';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { apiService, Chapter } from '@/services/api';
 import { Flashcard, FlashcardSet } from '@/types/flashcard';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 /**
  * Dashboard页面组件
@@ -15,6 +16,7 @@ import { Flashcard, FlashcardSet } from '@/types/flashcard';
  */
 function DashboardPage() {
   const router = useRouter();
+  const { t } = useLanguage();
 
   // 当前选中的输入方式
   const [activeTab, setActiveTab] = useState<'text' | 'file' | 'url' | 'topic'>('text');
@@ -122,22 +124,22 @@ function DashboardPage() {
 
     // 验证输入内容
     if (activeTab === 'text' && !textInput.trim()) {
-      showToast('warning', '请输入学习内容', '请在文本框中粘贴你的学习材料');
+      showToast('warning', t('dashboard.messages.inputRequired'), t('dashboard.messages.inputHint'));
       return;
     }
 
     if (activeTab === 'file' && !selectedFile) {
-      showToast('warning', '请上传文件', '请选择或拖拽文件到上传区域');
+      showToast('warning', t('dashboard.messages.fileRequired'), t('dashboard.messages.fileHint'));
       return;
     }
 
     if (activeTab === 'url' && !urlInput.trim()) {
-      showToast('warning', '请输入网页链接', '请输入有效的网页URL地址');
+      showToast('warning', t('dashboard.messages.urlRequired'), t('dashboard.messages.urlHint'));
       return;
     }
 
     if (activeTab === 'topic' && !topicInput.trim()) {
-      showToast('warning', '请输入学习主题', '例如：高中数学函数、英语语法等');
+      showToast('warning', t('dashboard.messages.topicRequired'), t('dashboard.messages.topicHint'));
       return;
     }
 
@@ -186,19 +188,19 @@ function DashboardPage() {
       } else if (activeTab === 'file') {
         // 文件生成：先生成大纲，让用户选择章节
         if (!selectedFile) {
-          showToast('error', '文件丢失', '请重新上传文件');
+          showToast('error', t('dashboard.messages.fileRequired'), t('dashboard.messages.fileHint'));
           setIsProcessing(false);
           return;
         }
 
-        showToast('info', '正在分析文件大纲', '请稍候...');
+        showToast('info', t('dashboard.messages.analyzingCatalog'), t('dashboard.messages.analyzingHint'));
 
         const catalogResult = await apiService.generateCatalogFromFile(selectedFile, taskId || undefined);
 
         console.log('Catalog API response:', catalogResult);
 
         if (!catalogResult.success || !catalogResult.catalog) {
-          showToast('error', '大纲生成失败', catalogResult.error || '未知错误');
+          showToast('error', t('dashboard.messages.catalogFailed'), catalogResult.error || '未知错误');
           setIsProcessing(false);
           return;
         }
@@ -206,7 +208,7 @@ function DashboardPage() {
         // 验证 catalog 是否为数组
         if (!Array.isArray(catalogResult.catalog)) {
           console.error('Catalog is not an array:', catalogResult.catalog);
-          showToast('error', '大纲数据格式错误', '服务器返回的数据格式不正确');
+          showToast('error', t('dashboard.messages.catalogFormatError'), '服务器返回的数据格式不正确');
           setIsProcessing(false);
           return;
         }
@@ -224,7 +226,7 @@ function DashboardPage() {
         inputTitle = `网页生成 - ${urlInput}`;
       } else if (activeTab === 'topic') {
         // 主题生成 (暂未实现)
-        showToast('info', '功能开发中', '主题生成功能即将上线');
+        showToast('info', t('dashboard.messages.featureComingSoon'), t('dashboard.messages.topicFeatureHint'));
         setIsProcessing(false);
         return;
       }
@@ -266,13 +268,13 @@ function DashboardPage() {
         localStorage.setItem('currentFlashcardSet', JSON.stringify(flashcardSet));
 
         // 显示成功提示
-        showToast('success', '生成成功', `成功生成 ${cardsWithIds.length} 张闪卡`);
+        showToast('success', t('dashboard.messages.generateSuccess'), t('dashboard.messages.generateSuccessHint', { count: cardsWithIds.length }));
       } else {
-        showToast('error', '生成失败', result?.error || '未知错误');
+        showToast('error', t('dashboard.messages.generateFailed'), result?.error || '未知错误');
       }
     } catch (error) {
       console.error('生成闪卡时出错:', error);
-      showToast('error', '生成失败', '发生错误，请稍后重试');
+      showToast('error', t('dashboard.messages.generateFailed'), '发生错误，请稍后重试');
     } finally {
       setIsProcessing(false);
     }
@@ -288,7 +290,7 @@ function DashboardPage() {
 
     try {
       if (!selectedFile) {
-        showToast('error', '文件丢失', '请重新上传文件');
+        showToast('error', t('dashboard.messages.fileRequired'), t('dashboard.messages.fileHint'));
         setIsProcessing(false);
         return;
       }
@@ -299,7 +301,7 @@ function DashboardPage() {
         return;
       }
 
-      showToast('info', '正在生成闪卡', `正在为 ${selectedChapterIds.length} 个章节生成闪卡，请稍候...`);
+      showToast('info', t('dashboard.messages.generating'), t('dashboard.messages.generatingHint', { count: selectedChapterIds.length }));
 
       // 调用API生成闪卡，传递taskId给后端
       const result = await apiService.generateFlashcardsFromFileSection(
@@ -358,11 +360,11 @@ function DashboardPage() {
       localStorage.setItem('currentFlashcardSet', JSON.stringify(flashcardSet));
 
       // 显示成功提示
-      showToast('success', '生成成功', `成功生成 ${cardsWithIds.length} 张闪卡`);
+      showToast('success', t('dashboard.messages.generateSuccess'), t('dashboard.messages.generateSuccessHint', { count: cardsWithIds.length }));
 
     } catch (error) {
       console.error('生成闪卡时出错:', error);
-      showToast('error', '生成失败', '发生错误，请稍后重试');
+      showToast('error', t('dashboard.messages.generateFailed'), '发生错误，请稍后重试');
     } finally {
       setIsProcessing(false);
     }
@@ -386,18 +388,18 @@ function DashboardPage() {
     // 文件类型验证
     const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain', 'text/markdown'];
     if (!validTypes.includes(file.type) && !file.name.match(/\.(pdf|doc|docx|txt|md)$/i)) {
-      showToast('error', '文件类型不支持', '请上传 PDF, DOC, DOCX, TXT 或 MD 文件');
+      showToast('error', t('dashboard.messages.fileTypeError'), t('dashboard.messages.fileTypeHint'));
       return;
     }
 
     // 文件大小限制 (10MB)
     if (file.size > 10 * 1024 * 1024) {
-      showToast('error', '文件过大', '文件大小不能超过 10MB');
+      showToast('error', t('dashboard.messages.fileSizeError'), t('dashboard.messages.fileSizeHint'));
       return;
     }
 
     setSelectedFile(file);
-    showToast('info', '文件已选择', `${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
+    showToast('info', t('dashboard.messages.fileSelected'), `${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
   };
 
   /**
@@ -459,12 +461,12 @@ function DashboardPage() {
         return (
           <div className="space-y-4">
             <label className="block text-sm font-medium text-gray-700">
-              学习内容
+              {t('dashboard.inputs.textLabel')}
             </label>
             <textarea
               value={textInput}
               onChange={(e) => setTextInput(e.target.value)}
-              placeholder="粘贴你的学习材料..."
+              placeholder={t('dashboard.inputs.textPlaceholder')}
               className="w-full h-40 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent resize-none"
             />
           </div>
@@ -473,7 +475,7 @@ function DashboardPage() {
         return (
           <div className="space-y-4">
             <label className="block text-sm font-medium text-gray-700">
-              文件
+              {t('dashboard.inputs.fileLabel')}
             </label>
             <div
               className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${
@@ -495,12 +497,12 @@ function DashboardPage() {
                 </div>
                 <div className="text-sm text-gray-600">
                   <span className="font-medium text-gray-900 hover:text-gray-700">
-                    点击上传
+                    {t('dashboard.inputs.fileUploadText')}
                   </span>
-                  <span> 或拖拽文件到此处</span>
+                  <span> {t('dashboard.inputs.fileDragText')}</span>
                 </div>
                 <p className="text-xs text-gray-500">
-                  PDF、DOC、TXT、MD，最大 10MB
+                  {t('dashboard.inputs.fileHint')}
                 </p>
                 {selectedFile && (
                   <div className="mt-4 p-3 bg-gray-100 rounded-md text-sm text-gray-700">
@@ -523,13 +525,13 @@ function DashboardPage() {
         return (
           <div className="space-y-4">
             <label className="block text-sm font-medium text-gray-700">
-              网页链接
+              {t('dashboard.inputs.urlLabel')}
             </label>
             <input
               type="url"
               value={urlInput}
               onChange={(e) => setUrlInput(e.target.value)}
-              placeholder="https://example.com"
+              placeholder={t('dashboard.inputs.urlPlaceholder')}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
             />
           </div>
@@ -538,13 +540,13 @@ function DashboardPage() {
         return (
           <div className="space-y-4">
             <label className="block text-sm font-medium text-gray-700">
-              学习主题
+              {t('dashboard.inputs.topicLabel')}
             </label>
             <input
               type="text"
               value={topicInput}
               onChange={(e) => setTopicInput(e.target.value)}
-              placeholder="例如：高中数学函数、英语语法..."
+              placeholder={t('dashboard.inputs.topicPlaceholder')}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
             />
           </div>
@@ -561,7 +563,7 @@ function DashboardPage() {
         {/* 核心操作区域 */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">创建新的闪卡集</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('dashboard.title')}</h2>
 
             {/* Tab切换 */}
             <div className="mb-6">
@@ -574,7 +576,7 @@ function DashboardPage() {
                       : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
-                  文本
+                  {t('dashboard.tabs.text')}
                 </button>
                 <button
                   onClick={() => setActiveTab('file')}
@@ -584,7 +586,7 @@ function DashboardPage() {
                       : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
-                  文件
+                  {t('dashboard.tabs.file')}
                 </button>
                 <button
                   onClick={() => setActiveTab('url')}
@@ -594,7 +596,7 @@ function DashboardPage() {
                       : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
-                  网页
+                  {t('dashboard.tabs.url')}
                 </button>
                 <button
                   onClick={() => setActiveTab('topic')}
@@ -604,7 +606,7 @@ function DashboardPage() {
                       : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
-                  <span>主题</span>
+                  <span>{t('dashboard.tabs.topic')}</span>
                   <span className="text-xs bg-gradient-to-r from-blue-600 to-purple-600 text-white px-1.5 py-0.5 rounded">Pro</span>
                 </button>
               </div>
@@ -630,10 +632,10 @@ function DashboardPage() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    <span>生成中</span>
+                    <span>{t('dashboard.buttons.generating')}</span>
                   </div>
                 ) : (
-                  '开始生成'
+                  t('dashboard.buttons.generate')
                 )}
               </button>
             </div>

@@ -13,7 +13,7 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>('zh');
+  const [locale, setLocaleState] = useState<Locale>('en');
   const [messages, setMessages] = useState<any>({});
 
   // 从localStorage加载语言设置

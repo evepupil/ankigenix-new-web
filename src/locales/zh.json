@@ -48,6 +48,7 @@
     },
     "howItWorks": {
       "title": "如何使用",
+      "subtitle": "简单几步，开始你的高效学习之旅",
       "step1": {
         "title": "输入内容",
         "description": "粘贴文本、上传文件或输入网页链接"
@@ -69,6 +70,9 @@
       "title": "准备好开始了吗？",
       "subtitle": "立即体验AI驱动的智能闪卡生成",
       "button": "免费开始"
+    },
+    "footer": {
+      "copyright": "保留所有权利"
     }
   },
   "dashboard": {
