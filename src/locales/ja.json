@@ -193,6 +193,82 @@
       }
     }
   },
+  "login": {
+    "title": "アカウントにログイン",
+    "subtitle": "アカウントをお持ちでない方",
+    "signupLink": "今すぐ登録",
+    "form": {
+      "emailLabel": "メールアドレス",
+      "emailPlaceholder": "メールアドレスを入力",
+      "passwordLabel": "パスワード",
+      "passwordPlaceholder": "パスワードを入力",
+      "rememberMe": "ログイン状態を保持",
+      "forgotPassword": "パスワードを忘れた方",
+      "loginButton": "ログイン",
+      "loggingIn": "ログイン中..."
+    },
+    "divider": "または",
+    "socialLogin": {
+      "google": "Google",
+      "microsoft": "Microsoft"
+    },
+    "errors": {
+      "emailRequired": "メールアドレスを入力してください",
+      "emailInvalid": "有効なメールアドレスを入力してください",
+      "passwordRequired": "パスワードを入力してください",
+      "passwordTooShort": "パスワードは6文字以上である必要があります",
+      "loginFailed": "ログインに失敗しました。メールアドレスとパスワードを確認してください",
+      "networkError": "ネットワークエラー、後でもう一度お試しください"
+    }
+  },
+  "register": {
+    "title": "アカウントを作成",
+    "subtitle": "すでにアカウントをお持ちの方",
+    "loginLink": "今すぐログイン",
+    "form": {
+      "nameLabel": "名前",
+      "namePlaceholder": "お名前を入力",
+      "emailLabel": "メールアドレス",
+      "emailPlaceholder": "メールアドレスを入力",
+      "passwordLabel": "パスワード",
+      "passwordPlaceholder": "パスワードを入力",
+      "confirmPasswordLabel": "パスワード確認",
+      "confirmPasswordPlaceholder": "パスワードを再入力",
+      "agreeToTerms": "同意します",
+      "termsLink": "利用規約",
+      "and": "と",
+      "privacyLink": "プライバシーポリシー",
+      "registerButton": "アカウントを作成",
+      "registering": "登録中..."
+    },
+    "divider": "または",
+    "socialRegister": {
+      "google": "Google",
+      "github": "GitHub"
+    },
+    "passwordStrength": {
+      "veryWeak": "非常に弱い",
+      "weak": "弱い",
+      "fair": "普通",
+      "strong": "強い",
+      "veryStrong": "非常に強い"
+    },
+    "errors": {
+      "nameRequired": "名前を入力してください",
+      "nameTooShort": "名前は2文字以上である必要があります",
+      "emailRequired": "メールアドレスを入力してください",
+      "emailInvalid": "有効なメールアドレスを入力してください",
+      "passwordRequired": "パスワードを入力してください",
+      "passwordTooShort": "パスワードは8文字以上である必要があります",
+      "passwordWeak": "パスワードには大文字、小文字、数字を含める必要があります",
+      "confirmPasswordRequired": "パスワードを確認してください",
+      "passwordMismatch": "パスワードが一致しません",
+      "termsRequired": "利用規約とプライバシーポリシーに同意してください",
+      "registerFailed": "登録に失敗しました。後でもう一度お試しください",
+      "networkError": "ネットワークエラー、後でもう一度お試しください"
+    },
+    "successMessage": "登録成功！メールを確認してアカウントを認証してください。"
+  },
   "features": {
     "hero": {
       "title": "AI搭載フラッシュカード生成ツール",

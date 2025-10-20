@@ -193,6 +193,82 @@
       }
     }
   },
+  "login": {
+    "title": "登录您的账户",
+    "subtitle": "还没有账户？",
+    "signupLink": "立即注册",
+    "form": {
+      "emailLabel": "邮箱地址",
+      "emailPlaceholder": "请输入邮箱地址",
+      "passwordLabel": "密码",
+      "passwordPlaceholder": "请输入密码",
+      "rememberMe": "记住我",
+      "forgotPassword": "忘记密码？",
+      "loginButton": "登录",
+      "loggingIn": "登录中..."
+    },
+    "divider": "或者",
+    "socialLogin": {
+      "google": "Google",
+      "microsoft": "Microsoft"
+    },
+    "errors": {
+      "emailRequired": "请输入邮箱地址",
+      "emailInvalid": "请输入有效的邮箱地址",
+      "passwordRequired": "请输入密码",
+      "passwordTooShort": "密码长度至少6位",
+      "loginFailed": "登录失败，请检查邮箱和密码",
+      "networkError": "网络错误，请稍后重试"
+    }
+  },
+  "register": {
+    "title": "创建您的账户",
+    "subtitle": "已有账户？",
+    "loginLink": "立即登录",
+    "form": {
+      "nameLabel": "姓名",
+      "namePlaceholder": "请输入您的姓名",
+      "emailLabel": "邮箱地址",
+      "emailPlaceholder": "请输入邮箱地址",
+      "passwordLabel": "密码",
+      "passwordPlaceholder": "请输入密码",
+      "confirmPasswordLabel": "确认密码",
+      "confirmPasswordPlaceholder": "请再次输入密码",
+      "agreeToTerms": "我同意",
+      "termsLink": "服务条款",
+      "and": "和",
+      "privacyLink": "隐私政策",
+      "registerButton": "创建账户",
+      "registering": "注册中..."
+    },
+    "divider": "或者",
+    "socialRegister": {
+      "google": "Google",
+      "github": "GitHub"
+    },
+    "passwordStrength": {
+      "veryWeak": "很弱",
+      "weak": "弱",
+      "fair": "一般",
+      "strong": "强",
+      "veryStrong": "很强"
+    },
+    "errors": {
+      "nameRequired": "请输入姓名",
+      "nameTooShort": "姓名至少2个字符",
+      "emailRequired": "请输入邮箱地址",
+      "emailInvalid": "请输入有效的邮箱地址",
+      "passwordRequired": "请输入密码",
+      "passwordTooShort": "密码长度至少8位",
+      "passwordWeak": "密码必须包含大小写字母和数字",
+      "confirmPasswordRequired": "请确认密码",
+      "passwordMismatch": "两次输入的密码不一致",
+      "termsRequired": "请同意服务条款和隐私政策",
+      "registerFailed": "注册失败，请稍后重试",
+      "networkError": "网络错误，请稍后重试"
+    },
+    "successMessage": "注册成功！请检查您的邮箱并验证账号。"
+  },
   "features": {
     "hero": {
       "title": "AI驱动的闪卡生成工具",

@@ -193,6 +193,82 @@
       }
     }
   },
+  "login": {
+    "title": "Login to Your Account",
+    "subtitle": "Don't have an account?",
+    "signupLink": "Sign up now",
+    "form": {
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "Enter your email",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "loginButton": "Login",
+      "loggingIn": "Logging in..."
+    },
+    "divider": "Or",
+    "socialLogin": {
+      "google": "Google",
+      "microsoft": "Microsoft"
+    },
+    "errors": {
+      "emailRequired": "Please enter your email",
+      "emailInvalid": "Please enter a valid email",
+      "passwordRequired": "Please enter your password",
+      "passwordTooShort": "Password must be at least 6 characters",
+      "loginFailed": "Login failed, please check your email and password",
+      "networkError": "Network error, please try again later"
+    }
+  },
+  "register": {
+    "title": "Create Your Account",
+    "subtitle": "Already have an account?",
+    "loginLink": "Login now",
+    "form": {
+      "nameLabel": "Name",
+      "namePlaceholder": "Enter your name",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "Enter your email",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "confirmPasswordLabel": "Confirm Password",
+      "confirmPasswordPlaceholder": "Enter your password again",
+      "agreeToTerms": "I agree to the",
+      "termsLink": "Terms of Service",
+      "and": "and",
+      "privacyLink": "Privacy Policy",
+      "registerButton": "Create Account",
+      "registering": "Registering..."
+    },
+    "divider": "Or",
+    "socialRegister": {
+      "google": "Google",
+      "github": "GitHub"
+    },
+    "passwordStrength": {
+      "veryWeak": "Very Weak",
+      "weak": "Weak",
+      "fair": "Fair",
+      "strong": "Strong",
+      "veryStrong": "Very Strong"
+    },
+    "errors": {
+      "nameRequired": "Please enter your name",
+      "nameTooShort": "Name must be at least 2 characters",
+      "emailRequired": "Please enter your email",
+      "emailInvalid": "Please enter a valid email",
+      "passwordRequired": "Please enter your password",
+      "passwordTooShort": "Password must be at least 8 characters",
+      "passwordWeak": "Password must contain uppercase, lowercase and numbers",
+      "confirmPasswordRequired": "Please confirm your password",
+      "passwordMismatch": "Passwords do not match",
+      "termsRequired": "Please agree to the Terms and Privacy Policy",
+      "registerFailed": "Registration failed, please try again later",
+      "networkError": "Network error, please try again later"
+    },
+    "successMessage": "Registration successful! Please check your email to verify your account."
+  },
   "features": {
     "hero": {
       "title": "AI-Powered Flashcard Generation Tool",
