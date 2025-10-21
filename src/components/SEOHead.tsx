@@ -10,9 +10,10 @@ interface SEOHeadProps {
 /**
  * SEO Head组件
  * 动态更新页面的meta标签以支持多语言SEO
+ * 包括hreflang标签和canonical URL优化
  */
 export default function SEOHead({ page }: SEOHeadProps) {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
 
   useEffect(() => {
     // 更新页面标题
@@ -89,7 +90,57 @@ export default function SEOHead({ page }: SEOHeadProps) {
       document.head.appendChild(twitterCard);
     }
 
-  }, [t, page]);
+    // ===== 新增：Canonical URL =====
+    // 设置当前页面的canonical URL
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    // 使用当前URL但移除查询参数，保持干净的URL
+    const canonicalUrl = window.location.origin + window.location.pathname;
+    canonical.setAttribute('href', canonicalUrl);
+
+    // ===== 新增：hreflang标签 =====
+    // 为多语言SEO添加hreflang标签
+    const languages = ['zh', 'en', 'ja'] as const;
+    const baseUrl = window.location.origin + window.location.pathname;
+
+    // 移除旧的hreflang标签
+    document.querySelectorAll('link[hreflang]').forEach(link => link.remove());
+
+    // 为每种语言添加hreflang标签
+    languages.forEach(lang => {
+      const hreflang = document.createElement('link');
+      hreflang.setAttribute('rel', 'alternate');
+      hreflang.setAttribute('hreflang', lang);
+      hreflang.setAttribute('href', `${baseUrl}?lang=${lang}`);
+      document.head.appendChild(hreflang);
+    });
+
+    // 添加x-default hreflang（默认语言为英文）
+    const hreflangDefault = document.createElement('link');
+    hreflangDefault.setAttribute('rel', 'alternate');
+    hreflangDefault.setAttribute('hreflang', 'x-default');
+    hreflangDefault.setAttribute('href', `${baseUrl}?lang=en`);
+    document.head.appendChild(hreflangDefault);
+
+    // 更新OG locale根据当前语言
+    let ogLocale = document.querySelector('meta[property="og:locale"]');
+    if (!ogLocale) {
+      ogLocale = document.createElement('meta');
+      ogLocale.setAttribute('property', 'og:locale');
+      document.head.appendChild(ogLocale);
+    }
+    const localeMap = {
+      zh: 'zh_CN',
+      en: 'en_US',
+      ja: 'ja_JP'
+    };
+    ogLocale.setAttribute('content', localeMap[locale]);
+
+  }, [t, page, locale]);
 
   return null; // 这个组件不渲染任何内容
 }

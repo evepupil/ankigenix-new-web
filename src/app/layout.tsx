@@ -4,6 +4,7 @@ import { Analytics } from '@vercel/analytics/react';
 import "./globals.css";
 import Header from "@/components/Header";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
+import HtmlLangUpdater from "@/components/HtmlLangUpdater";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 
@@ -70,12 +71,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <GoogleAnalytics />
         <LanguageProvider>
+          <HtmlLangUpdater />
           <AuthProvider>
             <Header />
             <main className="min-h-screen">
