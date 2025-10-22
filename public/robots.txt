@@ -1,0 +1,61 @@
+# robots.txt for AnkiGenix
+# 告诉搜索引擎如何爬取网站
+
+# 允许所有搜索引擎爬取
+User-agent: *
+Allow: /
+
+# 不允许爬取的路径
+# 登录和注册页面（不需要被索引）
+Disallow: /login
+Disallow: /register
+Disallow: /auth/
+
+# 用户控制台和私密内容（需要登录才能访问）
+Disallow: /dashboard
+Disallow: /preview/
+
+# API路径（不需要被索引）
+Disallow: /api/
+
+# 开发和测试页面（不公开）
+Disallow: /theme
+Disallow: /design
+Disallow: /navbar-showcase
+
+# Next.js 内部路径
+Disallow: /_next/
+Disallow: /static/
+
+# 站点地图位置
+Sitemap: https://ankigenix.com/sitemap.xml
+
+# 针对特定搜索引擎的优化配置
+# Google
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+Disallow: /dashboard
+Disallow: /preview/
+
+# Google图片搜索
+User-agent: Googlebot-Image
+Allow: /
+
+# Bing
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+Disallow: /dashboard
+Disallow: /preview/
+
+# 百度（中文市场）
+User-agent: Baiduspider
+Allow: /
+Disallow: /api/
+Disallow: /dashboard
+Disallow: /preview/
+
+# 爬取频率控制（避免服务器压力过大）
+# Google和Bing会自动遵循合理的爬取频率
+Crawl-delay: 1
